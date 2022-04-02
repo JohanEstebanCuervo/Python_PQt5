@@ -1,45 +1,64 @@
 from PyQt5 import QtWidgets , uic
 
-app = QtWidgets.QApplication([])
+class Miapp:
+	"""docstring for Miapp"""
+	def __init__(self,app):
+		self.__app = app
+		self.__inicio = uic.loadUi("Ventana_inicio.ui")
+		self.__acceso = uic.loadUi("Ventana_acceso.ui")
 
-inicio = uic.loadUi("Ventana_inicio.ui")
 
-acceso = uic.loadUi("Ventana_acceso.ui")
+		##################
+		# botton connect
+		##################
+		self.__inicio.pushButton_ingresar.clicked.connect(self.gui_login)
+		self.__inicio.pushButton_SALIR.clicked.connect(self.gui_exit)
+		self.__inicio.pushButton_limpiar.clicked.connect(self.gui_clean)
+		self.__inicio.Lineedit_Password.returnPressed.connect(self.gui_login)
 
-def gui_login():
+		self.config_specials()
 
-	name = inicio.Lineedit_User.text()
+		self.__inicio.Lineedit_Password.cursorPosition()
+		self.__inicio.show()
 
-	Password = inicio.Lineedit_Password.text()
+	def gui_login(self):
 
-	if len(name)==0 or len(Password)==0:
-		inicio.label_error.setText("Ingresar datos completos")
+		name = self.__inicio.Lineedit_User.text()
 
-	elif name=='Johan' and Password =='2906':
+		Password = self.__inicio.Lineedit_Password.text()
 
-		gui_entrar()
+		if len(name)==0 or len(Password)==0:
+			self.__inicio.label_error.setText("Ingresar datos completos")
 
-	else:
-		inicio.label_error.setText(".I. Chupela")
+		elif name=='Johan' and Password =='2906':
 
-def gui_entrar():
+			self.gui_entrar()
 
-	inicio.hide()
-	acceso.show()
+		else:
+			self.__inicio.label_error.setText(".I. Chupela")
 
-def gui_exit():
-	app.exit()
+	def gui_entrar(self):
 
-def gui_clean():
-	inicio.Lineedit_User.setText("")
-	inicio.Lineedit_Password.setText("")
-	inicio.label_error.setText("")
+		self.__inicio.hide()
+		self.__acceso.show()
 
-#bottom
+	def gui_exit(self):
+		self.__app.exit()
 
-inicio.pushButton_ingresar.clicked.connect(gui_login)
-inicio.pushButton_SALIR.clicked.connect(gui_exit)
-inicio.pushButton_limpiar.clicked.connect(gui_clean)
+	def gui_clean(self):
+		self.__inicio.Lineedit_User.setText("")
+		self.__inicio.Lineedit_Password.setText("")
+		self.__inicio.label_error.setText("")
 
-inicio.show()
-app.exec_()
+
+	def config_specials(self):
+
+		self.__inicio.Lineedit_User.setClearButtonEnabled(True)
+		self.__inicio.Lineedit_Password.setClearButtonEnabled(True)
+
+
+if __name__=='__main__':
+	app = QtWidgets.QApplication([])
+	Miapp_1 = Miapp(app)
+
+	app.exec_()
