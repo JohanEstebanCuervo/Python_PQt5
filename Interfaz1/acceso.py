@@ -2,8 +2,8 @@ from PyQt5 import QtWidgets , uic
 
 class Miapp:
 	"""docstring for Miapp"""
-	def __init__(self,app):
-		self.__app = app
+	def __init__(self):
+
 		self.__inicio = uic.loadUi("Ventana_inicio.ui")
 		self.__acceso = uic.loadUi("Ventana_acceso.ui")
 
@@ -18,6 +18,7 @@ class Miapp:
 
 		self.config_specials()
 
+		self.__inicio.pushButton_limpiar.hide()
 		self.__inicio.Lineedit_Password.cursorPosition()
 		self.__inicio.show()
 
@@ -29,6 +30,7 @@ class Miapp:
 
 		if len(name)==0 or len(Password)==0:
 			self.__inicio.label_error.setText("Ingresar datos completos")
+			self.__inicio.pushButton_limpiar.show()
 
 		elif name=='Johan' and Password =='2906':
 
@@ -43,7 +45,7 @@ class Miapp:
 		self.__acceso.show()
 
 	def gui_exit(self):
-		self.__app.exit()
+		self.__inicio.close()
 
 	def gui_clean(self):
 		self.__inicio.Lineedit_User.setText("")
@@ -59,6 +61,6 @@ class Miapp:
 
 if __name__=='__main__':
 	app = QtWidgets.QApplication([])
-	Miapp_1 = Miapp(app)
+	Miapp_1 = Miapp()
 
 	app.exec_()
