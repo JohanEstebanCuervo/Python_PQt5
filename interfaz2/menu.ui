@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>756</width>
-    <height>461</height>
+    <height>469</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,6 +23,9 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="styleSheet">
+    <string notr="true">font: 8pt &quot;Microsoft Sans Serif&quot;;</string>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>0</number>
@@ -59,7 +62,7 @@ QFrame{
 border-top-left-radius: 20px;
 border-bottom-left-radius: 20px;
 
-background-color: rgb(170, 0, 255);
+background-color: rgb(255,255, 255);
 
 }
 </string>
@@ -102,13 +105,13 @@ background-color: rgb(170, 0, 255);
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton{
-background-color: #aa00ff;
+background-color: #ffffff;
 font: 87 12pt &quot;Arial Black&quot;;
 border-radius:0px;
 }
 
 QPushButton:hover{
-background-color: white;
+background-color: red;
 font: 87 12pt &quot;Arial Black&quot;;
 
 }
@@ -350,7 +353,7 @@ background-color:red;
          <property name="styleSheet">
           <string notr="true">
 QFrame{
-background-color:#aa55ff;
+background-color:#ffffff;
 }
 
 
@@ -636,9 +639,15 @@ font: 75 12pt &quot;Arial Narrow&quot;;
              <number>0</number>
             </property>
             <widget class="QWidget" name="page_inicio">
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
              <layout class="QVBoxLayout" name="verticalLayout_9">
               <item>
-               <widget class="QLabel" name="label">
+               <widget class="QLabel" name="label_Imagen">
+                <property name="styleSheet">
+                 <string notr="true">background-color: rgb(0, 0, 255);</string>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -660,9 +669,21 @@ font: 75 12pt &quot;Arial Narrow&quot;;
             </widget>
             <widget class="QWidget" name="page_configuracion">
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 255, 255);</string>
+              <string notr="true">background-color: rgb(255, 0, 255);</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
               <item>
                <widget class="QLabel" name="label_configuration">
                 <property name="text">
