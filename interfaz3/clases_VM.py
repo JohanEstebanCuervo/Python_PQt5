@@ -1,6 +1,6 @@
 import serial
 import time
-
+import PySpin
 
 class Corona_Multiespectral:
 
@@ -346,6 +346,341 @@ class Corona_Multiespectral:
 			self.__comunication.close()
 
 
+class Camera_PySpin():
+	"""docstring for Camera_PySpin"""
+	def __init__(self,pyspin_camlis,Gamma=1.25,ExposureTime=8000,Gain=0,Sharpness=1800,BlackLevel=0.7):
+		try:
+			self.__error_config = False
+			self.__init_complete = None
+			self.__cam = pyspin_camlis
+
+			nodemap_tldevice = self.__cam.GetTLDeviceNodeMap()
+
+			self.Device_Info(nodemap_tldevice)
+
+			self.__cam.init()
+
+			self.__nodemap = self.__cam.GetNodeMap()
+
+		except:
+
+			self.__init_complete = False
+
+
+
+		self.Set_Gamma(Gamma)
+
+		self.Set_BlackLevel(BlackLevel)
+
+		self.__exposure_auto = None
+		self.Set_Exposure_Auto(False)
+
+		self.Set_Exposure(ExposureTime)
+
+		self.__gain_auto = None
+		self.Set_Gain_Auto(False)
+
+		self.Set_Gain(Gain)
+
+		self.__sharpness_auto = None
+		self.Set_Sharpness_Auto(False)
+
+		self.Set_Sharpness(Sharpness)
 
 		
+		
 
+	##################################
+	#  Device info 
+	##################################
+
+
+	def Device_Info(self,nodemap):
+
+	    try:
+	        node_device_information = PySpin.CCategoryPtr(nodemap.GetNode('DeviceInformation'))
+	        self.__device_info = []
+
+	        if PySpin.IsAvailable(node_device_information) and PySpin.IsReadable(node_device_information):
+	            features = node_device_information.GetFeatures()
+	            for feature in features:
+	                node_feature = PySpin.CValuePtr(feature)
+	                self.__device_info.append([node_feature.GetName(), 
+	                	node_feature.ToString() if PySpin.IsReadable(node_feature) else 'Node not readable'])
+
+	        else:
+	            print('Device control information not available.')
+
+	    except PySpin.SpinnakerException as ex:
+	        print('Error: %s' % ex)
+	        
+	        if self.__init_complete is None:
+	        	self.__init_complete=False
+
+	        else:
+	        	self.__error_config= True
+
+
+	################################
+	# Set Funcionts
+	################################
+
+	def Set_BlackLevel(self,blacklevel):
+
+	    node_BlackLevel = PySpin.CFloatPtr(self.__nodemap.GetNode('BlackLevel'))
+	    if not PySpin.IsAvailable(node_BlackLevel) or not PySpin.IsWritable(node_BlackLevel):
+	        print('\nUnable to set BlackLevel (float retrieval). Aborting...\n')
+	        
+	        if self.__init_complete is None:
+	        	self.__init_complete=False
+
+	        else:
+	        	self.__error_config= True
+
+	        return 1
+
+	    node_BlackLevel.SetValue(blackLevel)
+
+	    self.__blacklevel = blacklevel
+
+	def Set_Gamma(self,gamma):
+
+	    node_Gamma = PySpin.CFloatPtr(self.__nodemap.GetNode('Gamma'))
+	    if not PySpin.IsAvailable(node_Gamma) or not PySpin.IsWritable(node_Gamma):
+	        print('\nUnable to set Gamma Time (Integer retrieval). Aborting...\n')
+
+	        if self.__init_complete is None:
+	        	self.__init_complete=False
+
+	        else:
+	        	self.__error_config= True
+
+	        return 1
+
+	    node_Gamma.SetValue(gamma)
+
+	    self.__gamma = gamma
+
+
+	def Set_Gain(self,gain):
+
+	    node_Gain = PySpin.CFloatPtr(self.__nodemap.GetNode('Gain'))
+	    if not PySpin.IsAvailable(node_Gain) or not PySpin.IsWritable(node_Gain):
+	        print('\nUnable to set Gain (float retrieval). Aborting...\n')
+
+	        if self.__init_complete is None:
+	            self.__init_complete=False
+
+	        else:
+	            self.__error_config= True
+
+	        return 1
+
+	    node_Gain.SetValue(gain)
+
+	    self.__gain = gain
+
+	def Set_Sharpness(self,sharpness):
+
+	    node_Sharpness = PySpin.CIntegerPtr(self.__nodemap.GetNode('Sharpness'))
+	    if not PySpin.IsAvailable(node_Sharpness) or not PySpin.IsWritable(node_Sharpness):
+	        print('\nUnable to set Sharpness Time (Integer retrieval). Aborting...\n')
+
+	        if self.__init_complete is None:
+	            self.__init_complete=False
+
+	        else:
+	            self.__error_config= True
+
+	        return 1
+
+	    node_Sharpness.SetValue(sharpness)
+
+	    self.__sharpness = sharpness
+
+
+	def Set_Exposure(self,exposure):
+
+	    node_exposure_time = PySpin.CFloatPtr(self.__nodemap.GetNode('ExposureTime'))
+
+	    if not PySpin.IsAvailable(node_exposure_time) or not PySpin.IsWritable(node_exposure_time):
+	        print('\nUnable to set Exposure Time (float retrieval). Aborting...\n')
+
+	        if self.__init_complete is None:
+	            self.__init_complete = False
+
+	        else:
+	            self.__error_config= True
+
+	        return 1
+
+	    node_exposure_time.SetValue(exposure)
+
+	    self.__exposure = exposure
+
+	def Set_Gain_Auto(self,boolean):
+		
+		if boolean == self.__gain_auto:
+			return 0
+
+		node_gain_auto = PySpin.CEnumerationPtr(self.__nodemap.GetNode('GainAuto'))
+		if not PySpin.IsAvailable(node_gain_auto) or not PySpin.IsWritable(node_gain_auto):
+		    print('\nUnable to set Gain Auto (enumeration retrieval). Aborting...\n')
+
+		    if self.__init_complete is None:
+		        self.__init_complete = False
+
+		    else:
+		        self.__error_config= True
+
+		    return 1
+
+
+		if boolean:
+		    entry_gain_auto_on = node_gain_auto.GetEntryByName('On')
+		    if not PySpin.IsAvailable(entry_gain_auto_on) or not PySpin.IsReadable(entry_gain_auto_on):
+		        print('\nUnable to set Gain Auto (entry retrieval). Aborting...\n')
+
+		        if self.__init_complete is None:
+		            self.__init_complete = False
+
+		        else:
+		            self.__error_config= True
+
+		        return 1
+
+		    gain_auto_on = entry_gain_auto_on.GetValue()
+
+		    node_gain_auto.SetIntValue(gain_auto_on)
+
+		else:
+
+		    entry_gain_auto_off = node_gain_auto.GetEntryByName('Off')
+		    if not PySpin.IsAvailable(entry_gain_auto_off) or not PySpin.IsReadable(entry_gain_auto_off):
+		        print('\nUnable to set Gain Auto (entry retrieval). Aborting...\n')
+
+		        if self.__init_complete is None:
+		            self.__init_complete = False
+
+		        else:
+		            self.__error_config= True
+
+		        return 1
+
+		    gain_auto_off = entry_gain_auto_off.GetValue()
+
+		    node_gain_auto.SetIntValue(gain_auto_off)
+
+		self.__gain_auto = boolean
+
+	def Set_Exposure_Auto(self,boolean):
+
+		if boolean == self.__exposure_auto:
+			return 0
+
+		node_exposure_auto = PySpin.CEnumerationPtr(self.__nodemap.GetNode('ExposureAuto'))
+		if not PySpin.IsAvailable(node_exposure_auto) or not PySpin.IsWritable(node_exposure_auto):
+		    print('\nUnable to set Exposure Auto (enumeration retrieval). Aborting...\n')
+
+		    if self.__init_complete is None:
+		        self.__init_complete = False
+
+		    else:
+		        self.__error_config= True
+
+		    return 1
+
+
+		if boolean:
+		    entry_exposure_auto_on = node_exposure_auto.GetEntryByName('On')
+		    if not PySpin.IsAvailable(entry_exposure_auto_on) or not PySpin.IsReadable(entry_exposure_auto_on):
+		        print('\nUnable to set Exposure Auto (entry retrieval). Aborting...\n')
+
+		        if self.__init_complete is None:
+		            self.__init_complete = False
+
+		        else:
+		            self.__error_config= True
+
+		        return 1
+
+		    exposure_auto_on = entry_exposure_auto_on.GetValue()
+
+		    node_exposure_auto.SetIntValue(exposure_auto_on)
+
+		else:
+
+		    entry_exposure_auto_off = node_exposure_auto.GetEntryByName('Off')
+		    if not PySpin.IsAvailable(entry_exposure_auto_off) or not PySpin.IsReadable(entry_exposure_auto_off):
+		        print('\nUnable to set Exposure Auto (entry retrieval). Aborting...\n')
+
+		        if self.__init_complete is None:
+		            self.__init_complete = False
+
+		        else:
+		            self.__error_config= True
+
+		        return 1
+
+		    exposure_auto_off = entry_exposure_auto_off.GetValue()
+
+		    node_exposure_auto.SetIntValue(exposure_auto_off)
+
+		self.__exposure_auto = boolean
+
+
+
+	def Set_Sharpness_Auto(self,boolean):
+
+		if boolean == self.__sharpness_auto:
+			return 0
+
+		node_Sharpness_auto = PySpin.CEnumerationPtr(self.__nodemap.GetNode('SharpnessAuto'))
+		if not PySpin.IsAvailable(node_Sharpness_auto) or not PySpin.IsWritable(node_Sharpness_auto):
+		    print('\nUnable to set Sharpness Auto (enumeration retrieval). Aborting...\n')
+
+		    if self.__init_complete is None:
+		        self.__init_complete = False
+
+		    else:
+		        self.__error_config= True
+
+		    return 1
+
+
+		if boolean:
+		    entry_Sharpness_auto_on = node_Sharpness_auto.GetEntryByName('On')
+		    if not PySpin.IsAvailable(entry_Sharpness_auto_on) or not PySpin.IsReadable(entry_Sharpness_auto_on):
+		        print('\nUnable to set Sharpness Auto (entry retrieval). Aborting...\n')
+
+		        if self.__init_complete is None:
+		            self.__init_complete = False
+
+		        else:
+		            self.__error_config= True
+
+		        return 1
+
+		    Sharpness_auto_on = entry_Sharpness_auto_on.GetValue()
+
+		    node_Sharpness_auto.SetIntValue(Sharpness_auto_on)
+
+		else:
+
+		    entry_Sharpness_auto_off = node_Sharpness_auto.GetEntryByName('Off')
+		    if not PySpin.IsAvailable(entry_Sharpness_auto_off) or not PySpin.IsReadable(entry_Sharpness_auto_off):
+		        print('\nUnable to set Sharpness Auto (entry retrieval). Aborting...\n')
+
+		        if self.__init_complete is None:
+		            self.__init_complete = False
+
+		        else:
+		            self.__error_config= True
+
+		        return 1
+
+		    Sharpness_auto_off = entry_Sharpness_auto_off.GetValue()
+
+		    node_Sharpness_auto.SetIntValue(Sharpness_auto_off)
+
+		self.__sharpness_auto = boolean
