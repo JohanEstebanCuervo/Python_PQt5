@@ -358,7 +358,7 @@ class Camera_PySpin():
 
 			self.Device_Info(nodemap_tldevice)
 
-			self.__cam.init()
+			self.__cam.Init()
 
 			self.__nodemap = self.__cam.GetNodeMap()
 
@@ -374,20 +374,16 @@ class Camera_PySpin():
 
 		self.__exposure_auto = None
 		self.Set_Exposure_Auto(False)
-
 		self.Set_Exposure(ExposureTime)
 
 		self.__gain_auto = None
 		self.Set_Gain_Auto(False)
-
 		self.Set_Gain(Gain)
 
 		self.__sharpness_auto = None
 		self.Set_Sharpness_Auto(False)
-
 		self.Set_Sharpness(Sharpness)
 
-		
 		
 
 	##################################
@@ -425,7 +421,7 @@ class Camera_PySpin():
 	# Set Funcionts
 	################################
 
-	def Set_BlackLevel(self,blacklevel):
+	def Set_BlackLevel(self, blacklevel):
 
 	    node_BlackLevel = PySpin.CFloatPtr(self.__nodemap.GetNode('BlackLevel'))
 	    if not PySpin.IsAvailable(node_BlackLevel) or not PySpin.IsWritable(node_BlackLevel):
@@ -439,7 +435,7 @@ class Camera_PySpin():
 
 	        return 1
 
-	    node_BlackLevel.SetValue(blackLevel)
+	    node_BlackLevel.SetValue(blacklevel)
 
 	    self.__blacklevel = blacklevel
 
@@ -460,7 +456,6 @@ class Camera_PySpin():
 	    node_Gamma.SetValue(gamma)
 
 	    self.__gamma = gamma
-
 
 	def Set_Gain(self,gain):
 
@@ -489,6 +484,7 @@ class Camera_PySpin():
 	        if self.__init_complete is None:
 	            self.__init_complete=False
 
+
 	        else:
 	            self.__error_config= True
 
@@ -498,25 +494,20 @@ class Camera_PySpin():
 
 	    self.__sharpness = sharpness
 
-
 	def Set_Exposure(self,exposure):
 
-	    node_exposure_time = PySpin.CFloatPtr(self.__nodemap.GetNode('ExposureTime'))
+		if self.__cam.ExposureTime.GetAccessMode() != PySpin.RW:
+		    print('Unable to set exposure time. Aborting...')
+		    return False
 
-	    if not PySpin.IsAvailable(node_exposure_time) or not PySpin.IsWritable(node_exposure_time):
-	        print('\nUnable to set Exposure Time (float retrieval). Aborting...\n')
+		# Ensure desired exposure time does not exceed the maximum
 
-	        if self.__init_complete is None:
-	            self.__init_complete = False
+		exposure_time_to_set = min(self.__cam.ExposureTime.GetMax(), exposure)
 
-	        else:
-	            self.__error_config= True
+		self.__cam.ExposureTime.SetValue(exposure_time_to_set)
 
-	        return 1
+		self.__exposure = exposure
 
-	    node_exposure_time.SetValue(exposure)
-
-	    self.__exposure = exposure
 
 	def Set_Gain_Auto(self,boolean):
 		
@@ -537,7 +528,7 @@ class Camera_PySpin():
 
 
 		if boolean:
-		    entry_gain_auto_on = node_gain_auto.GetEntryByName('On')
+		    entry_gain_auto_on = node_gain_auto.GetEntryByName('Continuous')
 		    if not PySpin.IsAvailable(entry_gain_auto_on) or not PySpin.IsReadable(entry_gain_auto_on):
 		        print('\nUnable to set Gain Auto (entry retrieval). Aborting...\n')
 
@@ -578,9 +569,9 @@ class Camera_PySpin():
 		if boolean == self.__exposure_auto:
 			return 0
 
-		node_exposure_auto = PySpin.CEnumerationPtr(self.__nodemap.GetNode('ExposureAuto'))
-		if not PySpin.IsAvailable(node_exposure_auto) or not PySpin.IsWritable(node_exposure_auto):
-		    print('\nUnable to set Exposure Auto (enumeration retrieval). Aborting...\n')
+
+		if self.__cam.ExposureAuto.GetAccessMode() != PySpin.RW:
+		    print('Unable to disable automatic exposure. Aborting...')
 
 		    if self.__init_complete is None:
 		        self.__init_complete = False
@@ -592,43 +583,14 @@ class Camera_PySpin():
 
 
 		if boolean:
-		    entry_exposure_auto_on = node_exposure_auto.GetEntryByName('On')
-		    if not PySpin.IsAvailable(entry_exposure_auto_on) or not PySpin.IsReadable(entry_exposure_auto_on):
-		        print('\nUnable to set Exposure Auto (entry retrieval). Aborting...\n')
 
-		        if self.__init_complete is None:
-		            self.__init_complete = False
-
-		        else:
-		            self.__error_config= True
-
-		        return 1
-
-		    exposure_auto_on = entry_exposure_auto_on.GetValue()
-
-		    node_exposure_auto.SetIntValue(exposure_auto_on)
+		    self.__cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Continuous)
 
 		else:
 
-		    entry_exposure_auto_off = node_exposure_auto.GetEntryByName('Off')
-		    if not PySpin.IsAvailable(entry_exposure_auto_off) or not PySpin.IsReadable(entry_exposure_auto_off):
-		        print('\nUnable to set Exposure Auto (entry retrieval). Aborting...\n')
-
-		        if self.__init_complete is None:
-		            self.__init_complete = False
-
-		        else:
-		            self.__error_config= True
-
-		        return 1
-
-		    exposure_auto_off = entry_exposure_auto_off.GetValue()
-
-		    node_exposure_auto.SetIntValue(exposure_auto_off)
+		    self.__cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
 
 		self.__exposure_auto = boolean
-
-
 
 	def Set_Sharpness_Auto(self,boolean):
 
@@ -649,7 +611,7 @@ class Camera_PySpin():
 
 
 		if boolean:
-		    entry_Sharpness_auto_on = node_Sharpness_auto.GetEntryByName('On')
+		    entry_Sharpness_auto_on = node_Sharpness_auto.GetEntryByName('Continuous')
 		    if not PySpin.IsAvailable(entry_Sharpness_auto_on) or not PySpin.IsReadable(entry_Sharpness_auto_on):
 		        print('\nUnable to set Sharpness Auto (entry retrieval). Aborting...\n')
 
@@ -684,3 +646,25 @@ class Camera_PySpin():
 		    node_Sharpness_auto.SetIntValue(Sharpness_auto_off)
 
 		self.__sharpness_auto = boolean
+
+	###################################
+	# Get Funcitons
+	###################################
+
+	def Get_Device_Info(self):
+
+		return self.__device_info
+
+
+	def Reset(self):
+
+		return self.__cam.IsInit()
+
+
+	##################################
+	# Special Funcitons
+	################################
+
+	def __del__(self):
+
+		self.__cam.DeInit()
