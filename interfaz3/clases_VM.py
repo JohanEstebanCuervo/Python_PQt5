@@ -348,10 +348,11 @@ class Corona_Multiespectral:
 
 class Camera_PySpin():
 	"""docstring for Camera_PySpin"""
-	def __init__(self,pyspin_camlis,Gamma=1.25,ExposureTime=8000,Gain=0,Sharpness=1800,BlackLevel=0.7):
+	def __init__(self,pyspin_camlis,Gamma=1.25,ExposureTime=8000,Gain=0,Sharpness=1800,BlackLevel=0.7,BufferMode='Continuous',BufferHandlingMode = 'NewestOnly',TriggerSource= 'Line2'):
 		try:
-			self.__error_config = False
-			self.__init_complete = None
+
+			self.__init_states()
+
 			self.__cam = pyspin_camlis
 
 			nodemap_tldevice = self.__cam.GetTLDeviceNodeMap()
@@ -367,25 +368,45 @@ class Camera_PySpin():
 			self.__init_complete = False
 
 
+		self.Set_Trigger_Mode(False)
+		self.Set_Trigger_Source(TriggerSource)
+		self.Set_Trigger_Mode(True)
+
+
 
 		self.Set_Gamma(Gamma)
 
 		self.Set_BlackLevel(BlackLevel)
 
-		self.__exposure_auto = None
+		
 		self.Set_Exposure_Auto(False)
 		self.Set_Exposure(ExposureTime)
 
-		self.__gain_auto = None
+		
 		self.Set_Gain_Auto(False)
 		self.Set_Gain(Gain)
 
-		self.__sharpness_auto = None
+		
 		self.Set_Sharpness_Auto(False)
 		self.Set_Sharpness(Sharpness)
 
 		
-
+	
+		self.Set_Buffer_Mode(BufferMode)
+		self.Set_Buffer_Count(1)
+		self.Set_Buffer_Handling_Mode(BufferHandlingMode)
+		
+	def __init_states(self):
+		self.__error_config = False
+		self.__init_complete = None
+		self.__trigger_mode = None
+		self.__exposure_auto = None
+		self.__gain_auto = None
+		self.__sharpness_auto = None
+		self.__trigger_mode=None
+		self.__buffer_mode = None
+		self.__buffer_count= None
+		self.__buffer_handling_mode = None
 	##################################
 	#  Device info 
 	##################################
@@ -569,6 +590,12 @@ class Camera_PySpin():
 		if boolean == self.__exposure_auto:
 			return 0
 
+		trigger_mode = self.__trigger_mode
+
+		if trigger_mode:
+
+			self.Set_Trigger_Mode(False)
+
 
 		if self.__cam.ExposureAuto.GetAccessMode() != PySpin.RW:
 		    print('Unable to disable automatic exposure. Aborting...')
@@ -591,6 +618,9 @@ class Camera_PySpin():
 		    self.__cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
 
 		self.__exposure_auto = boolean
+
+		if trigger_mode:
+			self.Set_Trigger_Mode(True)
 
 	def Set_Sharpness_Auto(self,boolean):
 
@@ -647,6 +677,207 @@ class Camera_PySpin():
 
 		self.__sharpness_auto = boolean
 
+	def Set_Trigger_Mode(self,boolean):
+
+		if boolean == self.__trigger_mode:
+			return 0
+
+		if self.__cam.TriggerMode.GetAccessMode() != PySpin.RW:
+		    print('Unable to disable trigger mode (node retrieval). Aborting...')
+
+		    if self.__init_complete is None:
+		        self.__init_complete = False
+
+		    else:
+		        self.__error_config= True
+
+		    return 1
+
+
+		if boolean:
+
+		    self.__cam.TriggerMode.SetValue(PySpin.TriggerMode_On)
+
+		else:
+
+		    self.__cam.TriggerMode.SetValue(PySpin.TriggerMode_Off)
+
+		self.__trigger_mode = boolean
+
+
+	def Set_Trigger_Source(self,line):
+
+		trigger_mode = self.__trigger_mode
+		if trigger_mode:
+
+			self.Set_Trigger_Mode(False)
+
+		if self.__cam.TriggerSource.GetAccessMode() != PySpin.RW:
+		    print('Unable to get trigger source (node retrieval). Aborting...')
+		    if self.__init_complete is None:
+		        self.__init_complete = False
+
+		    else:
+		        self.__error_config= True
+
+		    return 1
+
+		self.__cam.TriggerSource.SetValue(PySpin.TriggerSelector_FrameStart)
+
+		if line=='Software':
+
+			self.__cam.TriggerSource.SetValue(PySpin.TriggerSource_Software)
+
+		elif line=='Line0' :
+
+			self.__cam.TriggerSource.SetValue(PySpin.TriggerSource_Line0)
+
+		elif line=='Line1' :
+
+			self.__cam.TriggerSource.SetValue(PySpin.TriggerSource_Line1)
+
+		elif line=='Line2' :
+
+			self.__cam.TriggerSource.SetValue(PySpin.TriggerSource_Line2)
+
+		else:
+			return 1
+
+		self.__trigger_source = line
+
+		if trigger_mode:
+
+			self.Set_Trigger_Mode(True)
+
+
+	def Set_Buffer_Mode(self,mode):
+
+		if self.__cam.AcquisitionMode.GetAccessMode() != PySpin.RW:
+		    print('Unable to disable acquisition mode. Aborting...')
+
+		    if self.__init_complete is None:
+		        self.__init_complete = False
+
+		    else:
+		        self.__error_config= True
+
+		    return 1
+
+
+		if mode == 'Continuous':
+
+		    self.__cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_Continuous)
+
+		elif mode == 'SingleFrame':
+
+		    self.__cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_SingleFrame)
+
+		elif mode == 'MultiFrame':
+
+			self.__cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_MultiFrame)
+
+		else :
+
+			return 1
+
+
+		self.__buffer_mode = mode
+
+	def Set_Buffer_Count(self,numbuffer):
+
+		streaming_node = self.__cam.GetTLStreamNodeMap()
+		stream_buffer_count_mode = PySpin.CEnumerationPtr(streaming_node.GetNode('StreamBufferCountMode'))
+		if not PySpin.IsAvailable(stream_buffer_count_mode) or not PySpin.IsWritable(stream_buffer_count_mode):
+		    print('Unable to set Buffer Count Mode (node retrieval). Aborting...\n')
+		    return False
+
+		stream_buffer_count_mode_manual = PySpin.CEnumEntryPtr(stream_buffer_count_mode.GetEntryByName('Manual'))
+		if not PySpin.IsAvailable(stream_buffer_count_mode_manual) or not PySpin.IsReadable(stream_buffer_count_mode_manual):
+		    print('Unable to set Buffer Count Mode entry (Entry retrieval). Aborting...\n')
+		    return False
+
+		stream_buffer_count_mode.SetIntValue(stream_buffer_count_mode_manual.GetValue())
+
+
+		# Retrieve and modify Stream Buffer Count
+		buffer_count = PySpin.CIntegerPtr(streaming_node.GetNode('StreamBufferCountManual'))
+		if not PySpin.IsAvailable(buffer_count) or not PySpin.IsWritable(buffer_count):
+		    print('Unable to set Buffer Count (Integer node retrieval). Aborting...\n')
+		    if self.__init_complete is None:
+		        self.__init_complete = False
+
+		    else:
+		        self.__error_config= True
+
+		    return 1
+
+		# No exceder el maximo de buffer
+		numbufer = min(buffer_count.GetMax(),numbuffer)
+
+		buffer_count.SetValue(numbuffer)
+
+		self.__buffer_count = numbuffer
+
+    
+	def Set_Buffer_Handling_Mode(self,mode):
+
+		streaming_node = self.__cam.GetTLStreamNodeMap()
+
+		handling_mode = PySpin.CEnumerationPtr(streaming_node.GetNode('StreamBufferHandlingMode'))
+		if not PySpin.IsAvailable(handling_mode) or not PySpin.IsWritable(handling_mode):
+		    print('Unable to set Buffer Handling mode (node retrieval). Aborting...\n')
+		    if self.__init_complete is None:
+		        self.__init_complete = False
+
+		    else:
+		        self.__error_config= True
+
+		    return 1
+
+		handling_mode_entry = PySpin.CEnumEntryPtr(handling_mode.GetCurrentEntry())
+		if not PySpin.IsAvailable(handling_mode_entry) or not PySpin.IsReadable(handling_mode_entry):
+		    print('Unable to set Buffer Handling mode (Entry retrieval). Aborting...\n')
+		    if self.__init_complete is None:
+		        self.__init_complete = False
+
+		    else:
+		        self.__error_config= True
+
+		    return 1
+
+		if mode=='NewestFirst' or mode=='NewestOnly' or mode=='OldestFirst' or mode=='OldestFirstOverwrite':
+		        handling_mode_entry = handling_mode.GetEntryByName(mode)
+		        handling_mode.SetIntValue(handling_mode_entry.GetValue())
+
+		else:
+			return 1
+
+		self.__buffer_handling_mode = mode
+
+	#############################################
+	# Mode Functions 
+	############################################
+	def Mode_Acquisition_Multispectral(self):
+
+		self.Set_Gain_Auto(False)
+		self.Set_Gain(self.__gain)
+		self.Set_Sharpness_Auto(False)
+		self.Set_Sharpness(self.__sharpness)
+		self.Set_Exposure_Auto(False)
+		self.Set_Exposure(self.exposure)
+
+		self.Set_Trigger_Mode(True)
+
+
+	def Mode_Acquisition_Video(self):
+
+		self.Set_Gain_Auto(True)
+		self.Set_Sharpness_Auto(True)
+		self.Set_Exposure_Auto(True)
+		self.Set_Trigger_Mode(False)
+
+
+
 	###################################
 	# Get Funcitons
 	###################################
@@ -657,14 +888,15 @@ class Camera_PySpin():
 
 
 	def Reset(self):
+		####presenta error en spinnakker#####
+		return self.__cam.DeviceReset.Execute()
 
-		return self.__cam.IsInit()
 
 
 	##################################
-	# Special Funcitons
+	# Special Functions
 	################################
 
 	def __del__(self):
-
+		self.Mode_Video()
 		self.__cam.DeInit()

@@ -20,7 +20,10 @@ print(camara.Get_Device_Info())
 camara.Set_Exposure_Auto(True)
 camara.Set_Gain_Auto(True)
 camara.Set_Sharpness_Auto(True)
-#print(camara.Reset())
+
+camara.Set_Buffer_Mode('MultiFrame')
+
+#camara.Reset()
 del  camara 
 
 
