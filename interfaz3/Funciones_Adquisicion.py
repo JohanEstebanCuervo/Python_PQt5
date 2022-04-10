@@ -8,7 +8,7 @@ Created on Thu Mar 24 23:42:16 2022
 # -*- coding: utf-8 -*-
 
 import subprocess
-
+import PySpin
 # Esta funcion busca los puertos serial en uso. En caso de conocer el puerto serial se puede cambiar el parametro port='Nombre_del_puerto'
 def Serial_Port_Select(port=0,terminal=True):
     
@@ -58,7 +58,40 @@ def Serial_Port_Select(port=0,terminal=True):
             return lista
 
 
+def Cameras_List():
 
+    system = PySpin.System.GetInstance()
+
+    # Retrieve list of cameras from the system
+    cam_list = system.GetCameras()
+
+    num_cameras = cam_list.GetSize()
+
+    if num_cameras==0:
+
+        cam_list.Clear()
+        system.ReleaseInstance()
+
+        return 1
+
+
+    cam_name_list=[]
+    for i in range(num_cameras):
+
+        cam = cam_list[i]
+
+        if cam.TLDevice.DeviceModelName.GetAccessMode() == PySpin.RO:
+            cam_name_list.append(str(i+1)+" "+cam.TLDevice.DeviceModelName.ToString())
+
+        else:
+            cam_name_list.append(str(i+1)+" "+'unName camera')
+
+        del cam
+
+    cam_list.Clear()
+    system.ReleaseInstance()
+
+    return cam_name_list
         
 if __name__=='__main__':
     nombre = Serial_Port_Select()

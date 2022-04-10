@@ -15,7 +15,7 @@ print('Number of cameras detected: %d' % num_cameras)
 # Run example on each camera
 camara = Camera_PySpin(cam_list[0])
 
-print(camara.Get_Device_Info())
+print(camara.get_device_info())
 
 camara.Set_Exposure_Auto(True)
 camara.Set_Gain_Auto(True)

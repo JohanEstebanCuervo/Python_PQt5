@@ -5,6 +5,7 @@
 import subprocess
 from clases_VM import *
 import Funciones_Adquisicion as Fun_Ad
+import PySpin
 ################################
 # Librerias PyQt
 ################################
@@ -18,7 +19,7 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QPushButton, QM
                              QFrame, QLabel, QFileDialog)
 
 
-class Multiespectral_App(QtWidgets.QMainWindow):
+class AMILI_App(QtWidgets.QMainWindow):
 	
 	"""docstring for Multiespectral_App"""
 	def __init__(self):
@@ -35,7 +36,8 @@ class Multiespectral_App(QtWidgets.QMainWindow):
 		self.grip = QtWidgets.QSizeGrip(self)
 		self.grip.resize(self.gripSize, self.gripSize)
 
-
+		#carpeta temporal 
+		subprocess.run('md temp',shell=True)
 	##########################################
 	# timer para actualizacion del boton
 	##########################################
@@ -56,7 +58,7 @@ class Multiespectral_App(QtWidgets.QMainWindow):
 		self.pb_minimum.clicked.connect(self.control_pb_minimum)		
 		self.pb_normal.clicked.connect(self.control_pb_normal)
 		self.pb_maximum.clicked.connect(self.control_pb_maximum)
-		self.pb_exit.clicked.connect(lambda: self.close())
+		self.pb_exit.clicked.connect(self.exit_app)
 		self.pb_normal.hide()
 
 		#desplegar menu
@@ -65,7 +67,7 @@ class Multiespectral_App(QtWidgets.QMainWindow):
 
 		#botones de menu
 		self.pb_menu_capture.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_capture))
-		self.pb_menu_camera.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_camera))
+		self.pb_menu_camera.clicked.connect(self.control_pb_menu_camera)
 		self.pb_menu_corona.clicked.connect(self.control_pb_menu_corona)
 		self.pb_menu_colorReproduction.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_colorReproduction))
 		self.pb_menu_settings.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.page_settings))
@@ -77,29 +79,70 @@ class Multiespectral_App(QtWidgets.QMainWindow):
 		self.pb_sc_leds.clicked.connect(self.control_pb_sc_leds)
 		self.pb_sc_PWMleds.clicked.connect(self.control_pb_sc_PWMleds)
 
-	##########################################
-	# Ocultar ventanas que no se van a mostrar en el inicio
-	##########################################
+		#botones settings camera
+		self.pb_init_camera.clicked.connect(self.control_pb_init_camera)
+
+
+		#botones page capture
+		self.pb_capture.clicked.connect(self.control_pb_capture)
+
+   ##########################################
+   # Ocultar ventanas que no se van a mostrar en el inicio
+   ##########################################
 
 		self.fm_leds.hide()
 		self.fm_PWM.hide()
 
 
-	#########################################
-	# Variables Propias de App para control
-	#########################################
+   #########################################
+   # Variables Propias de App para control
+   #########################################
 
 		self.corona_init = False
+		self.camera_init = False
+		self.__system_pyspin = None
+		self.__cam_list = None
+
+
 
 	#########################################
-	# Funciones de ventanas 
+	# Page Capture Functions
 	#########################################
+
+	def control_pb_capture(self):
+
+		if self.camera_init and self.corona_init:
+
+			self.camera.Mode_Acquisition_Multispectral()
+
+			self.camera.Set_Buffer_Count(len(self.corona.get_leds()))
+
+			self.camera.Set_Buffer_Handling_Mode('OldestFirstOverwrite')
+
+			self.camera.Init_Acquisition()
+
+			self.corona.set_time_sleepc(1e-1)
+
+			self.corona.shot_multispectral()
+
+
+			for led in self.corona.get_leds():
+
+				self.camera.Acquire_Image(led[2])
+
+			self.camera.End_Acquisition()
+
+
+
+
+    #########################################
+    #########################################
 
 	def check_connection(self):
 
 		if self.corona_init:
-			self.pb_error_conection.setStyleSheet("background-color : green; border-radius: 10px")
-			self.lb_error_conection.setText("")
+			self.pb_error_conection_corona.setStyleSheet("background-color : green; border-radius: 10px")
+			self.lb_error_conection_corona.setText("")
 			ports = Fun_Ad.Serial_Port_Select(terminal=False)
 			bandera=0
 			if ports != 1:
@@ -110,8 +153,8 @@ class Multiespectral_App(QtWidgets.QMainWindow):
 
 			if bandera==0:
 				self.corona_init=False
-				self.pb_error_conection.setStyleSheet("background-color : red; border-radius: 10px")
-				self.lb_error_conection.setText("Corona desconectada")
+				self.pb_error_conection_corona.setStyleSheet("background-color : red; border-radius: 10px")
+				self.lb_error_conection_corona.setText("Corona desconectada")
 				self.fm_init_corona.show()
 				self.fm_settings_corona.hide()
 
@@ -175,8 +218,28 @@ class Multiespectral_App(QtWidgets.QMainWindow):
 
 		self.stackedWidget.setCurrentWidget(self.page_corona)
 
+	def control_pb_menu_camera(self):
+		if self.camera_init:
+
+			self.fm_settings_camera.show()
+			self.fm_init_camera.hide()
+
+
+		else:
+			self.fm_settings_camera.hide()
+			self.fm_init_camera.show()
+
+			self.cb_listCameras.clear()
+			list_cameras = Fun_Ad.Cameras_List()
+			if list_cameras!=1:
+				self.cb_listCameras.addItems(list_cameras)
+
+
+
+		self.stackedWidget.setCurrentWidget(self.page_camera)
+
 	#################################
-	# Control buttons settings corona
+	# Control buttons settings
 	#################################
 
 	def control_pb_init_corona(self):
@@ -204,7 +267,7 @@ class Multiespectral_App(QtWidgets.QMainWindow):
 
 				self.le_timeFlash.setText(str(self.corona.get_shot_time_flash()))
 
-#Adquisition Multispectral Interfaz Leds Ilumination
+		#Adquisition Multispectral Interfaz Leds Ilumination
 
 				self.fm_init_corona.hide()
 				self.fm_settings_corona.show()
@@ -214,6 +277,56 @@ class Multiespectral_App(QtWidgets.QMainWindow):
 		except:
 				self.lb_init_c_error.setText("No se ha podido iniciar la corona")
 
+	def control_pb_init_camera(self):
+
+		camera_index = self.cb_listCameras.currentText()
+		index = int(camera_index[:camera_index.find(" ")])-1
+
+		if True:
+			self.__system_pyspin = PySpin.System.GetInstance()
+			self.__cam_list = self.__system_pyspin.GetCameras()
+
+			self.camera = Camera_PySpin(self.__cam_list[index])
+
+			if self.camera.get_init_complete():
+
+				self.lb_sca_camera.setText(camera_index[camera_index.find(" ")+1:])
+
+				self.le_blackLevel.setText(str(self.camera.get_blacklevel()))
+
+				self.le_gamma.setText(str(self.camera.get_gamma()))
+
+				self.le_gain.setText(str(self.camera.get_gain()))
+
+				self.le_sharpness.setText(str(self.camera.get_sharpness()))
+
+				self.le_exposure.setText(str(self.camera.get_exposure()))
+
+				self.le_bufferMode.setText(str(self.camera.get_buffer_mode()))
+
+				self.le_bufferCount.setText(str(self.camera.get_buffer_count()))
+
+				self.le_bufferHandlingMode.setText(str(self.camera.get_buffer_handling_mode()))
+
+				self.cb_gainAuto.setChecked(self.camera.get_gain_auto())
+
+				self.cb_sharpnessAuto.setChecked(self.camera.get_sharpness_auto())
+
+				self.cb_exposureAuto.setChecked(self.camera.get_exposure_auto())
+
+				self.cb_triggerMode.setChecked(self.camera.get_trigger_mode())
+
+
+				self.fm_init_camera.hide()
+				self.fm_settings_camera.show()
+				self.camera_init = True
+				self.lb_init_camera_error.setText("")
+
+			else:
+				self.lb_init_camera_error.setText("No se ha podido iniciar la camara por completo")
+
+		else:
+			self.lb_init_camera_error.setText("No se ha podido iniciar la camara")
 
 
 	def cb_buttons_checked(self,action):
@@ -539,10 +652,33 @@ class Multiespectral_App(QtWidgets.QMainWindow):
 		else:
 			self.fm_PWM_led_15.hide()
 
+	def exit_app(self):
+
+		if self.camera_init:
+
+			del self.camera
+
+		if self.corona_init:
+
+			del self.corona
+
+		self.close()
+
+
+		subprocess.run('rd temp',shell=True)
+
+	def __del__(self):
+
+		if not self.__cam_list is None:
+			self.__cam_list.Clear()
+
+		if not self.__system_pyspin is None:
+			self.__system_pyspin.ReleaseInstance()
+
 
 
 if __name__ == "__main__":
 	app = QtWidgets.QApplication([])
-	mi_app = Multiespectral_App()
+	mi_app = AMILI_App()
 	mi_app.show()
 	app.exit(app.exec_())	

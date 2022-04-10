@@ -5,11 +5,12 @@ import PySpin
 class Corona_Multiespectral:
 
 	"""docstring for Corona_Multiespectral"""
-	def __init__(self, puerto,bps=57600,time_sleep_c=1e-2):
+	def __init__(self, puerto,bps=57600,time_sleep_c=1e-2,timeshot=1e-2):
 		print("Iniciando Corona_Multiespectral")
 		self.__timesleepc = time_sleep_c
 		self.__shot_mesage = 'W'
 		self.__leds = ['M01N','M02N','M03N','M04N','M05N','M06N','M07N','M08N','M09N','M0AN','M0BN','M0CN','M0DN','M0EN','M0FN']
+		self.__timeshot = timeshot
 		try:		
 			self.__comunication = serial.Serial(puerto,bps)
 			self.__comunication_state=True
@@ -180,14 +181,14 @@ class Corona_Multiespectral:
 			print("Valor incorrecto se debe ingresar 3 digitos para un valor correcto de tiempo")
 			return 1
 
-	def set_shot_leds(self,pos_leds):
+	def set_shot_leds(self,pos_led):
 
 		if self.__comunication_state:
 			bandera=0
 			iteraciones=0
 			while bandera==0 and iteraciones<5:
-					try:
-						self.__comunication.write(self.__leds[pos_leds].encode('utf-8'))
+					if True:
+						self.__comunication.write(self.__leds[pos_led].encode('utf-8'))
 						time.sleep(self.__timesleepc)
 
 						Check=''
@@ -200,7 +201,7 @@ class Corona_Multiespectral:
 
 						iteraciones+=1
 
-					except:
+					else:
 						print("error en la comunicacion no se configuro el led para el disparo")
 						self.__comunication_state=False
 						break
@@ -260,6 +261,10 @@ class Corona_Multiespectral:
 	def set_shot_mesage(self,mensaje):
 
 		self.__shot_mesage = mensaje
+
+	def set_time_sleepc(self,time):
+
+		self.__timesleepc = time
 
 	#########################
 
@@ -331,6 +336,16 @@ class Corona_Multiespectral:
 
 				return 1
 
+	def shot_multispectral(self):
+
+		for i in range(len(self.__leds)):
+
+			self.set_shot_leds(i)
+
+			self.shot()
+
+			time.sleep(self.__timeshot)
+
 
 
 	##############################
@@ -348,7 +363,7 @@ class Corona_Multiespectral:
 
 class Camera_PySpin():
 	"""docstring for Camera_PySpin"""
-	def __init__(self,pyspin_camlis,Gamma=1.25,ExposureTime=8000,Gain=0,Sharpness=1800,BlackLevel=0.7,BufferMode='Continuous',BufferHandlingMode = 'NewestOnly',TriggerSource= 'Line2'):
+	def __init__(self,pyspin_camlis,Gamma=1.25,ExposureTime=8000,Gain=0,Sharpness=1800,BlackLevel=0.7,BufferMode='Continuous',BufferHandlingMode = 'NewestOnly',TriggerSource= 'Line2',BufferCount=3):
 		try:
 
 			self.__init_states()
@@ -364,37 +379,68 @@ class Camera_PySpin():
 			self.__nodemap = self.__cam.GetNodeMap()
 
 		except:
-
+			print('Error en el inicio de la camara')
 			self.__init_complete = False
 
 
-		self.Set_Trigger_Mode(False)
-		self.Set_Trigger_Source(TriggerSource)
-		self.Set_Trigger_Mode(True)
+		if self.Set_Trigger_Mode(False):
+
+			print('error set trigger mode configure')
+
+		if self.Set_Trigger_Source(TriggerSource):
+
+			print('error set trigger source configure')
+
+		if self.Set_Trigger_Mode(True):
+
+			print('error set trigger mode reconfigure ')
 
 
 
-		self.Set_Gamma(Gamma)
+		if self.Set_Gamma(Gamma):
 
-		self.Set_BlackLevel(BlackLevel)
+			print('error set gamma configure')
+
+		if self.Set_BlackLevel(BlackLevel):
+
+			print('error set black level configure')
 
 		
-		self.Set_Exposure_Auto(False)
-		self.Set_Exposure(ExposureTime)
+		if self.Set_Exposure_Auto(False):
 
-		
-		self.Set_Gain_Auto(False)
-		self.Set_Gain(Gain)
+			print('error set exposure auto configure')
 
-		
-		self.Set_Sharpness_Auto(False)
-		self.Set_Sharpness(Sharpness)
+		if self.Set_Exposure(ExposureTime):
+
+			print('error set exposure')
+
+		if self.Set_Gain_Auto(False):
+
+			print('error set gain auto configure')
+		if self.Set_Gain(Gain):
+
+			print('error set gain configure')
+
+
+		if self.Set_Sharpness_Auto(False):
+			print('error set sharpness auto configure')
+
+		if self.Set_Sharpness(Sharpness):
+			print('error set sharpness configure')
 
 		
 	
-		self.Set_Buffer_Mode(BufferMode)
-		self.Set_Buffer_Count(1)
-		self.Set_Buffer_Handling_Mode(BufferHandlingMode)
+		if self.Set_Buffer_Mode(BufferMode):
+			print('error set buffer mode configure')
+
+		if self.Set_Buffer_Count(BufferCount):
+			print('error set buffer count configure')
+
+		if self.Set_Buffer_Handling_Mode(BufferHandlingMode):
+			print('error set buffer handling mode configure')
+
+
+		self.__init_complete = True
 		
 	def __init_states(self):
 		self.__error_config = False
@@ -444,57 +490,63 @@ class Camera_PySpin():
 
 	def Set_BlackLevel(self, blacklevel):
 
-	    node_BlackLevel = PySpin.CFloatPtr(self.__nodemap.GetNode('BlackLevel'))
-	    if not PySpin.IsAvailable(node_BlackLevel) or not PySpin.IsWritable(node_BlackLevel):
-	        print('\nUnable to set BlackLevel (float retrieval). Aborting...\n')
-	        
-	        if self.__init_complete is None:
-	        	self.__init_complete=False
+		node_BlackLevel = PySpin.CFloatPtr(self.__nodemap.GetNode('BlackLevel'))
+		if not PySpin.IsAvailable(node_BlackLevel) or not PySpin.IsWritable(node_BlackLevel):
+		    print('\nUnable to set BlackLevel (float retrieval). Aborting...\n')
+		    
+		    if self.__init_complete is None:
+		    	self.__init_complete=False
 
-	        else:
-	        	self.__error_config= True
+		    else:
+		    	self.__error_config= True
 
-	        return 1
+		    return 1
 
-	    node_BlackLevel.SetValue(blacklevel)
+		node_BlackLevel.SetValue(blacklevel)
 
-	    self.__blacklevel = blacklevel
+		self.__blacklevel = blacklevel
+
+		return 0
 
 	def Set_Gamma(self,gamma):
 
-	    node_Gamma = PySpin.CFloatPtr(self.__nodemap.GetNode('Gamma'))
-	    if not PySpin.IsAvailable(node_Gamma) or not PySpin.IsWritable(node_Gamma):
-	        print('\nUnable to set Gamma Time (Integer retrieval). Aborting...\n')
+		node_Gamma = PySpin.CFloatPtr(self.__nodemap.GetNode('Gamma'))
+		if not PySpin.IsAvailable(node_Gamma) or not PySpin.IsWritable(node_Gamma):
+		    print('\nUnable to set Gamma Time (Integer retrieval). Aborting...\n')
 
-	        if self.__init_complete is None:
-	        	self.__init_complete=False
+		    if self.__init_complete is None:
+		    	self.__init_complete=False
 
-	        else:
-	        	self.__error_config= True
+		    else:
+		    	self.__error_config= True
 
-	        return 1
+		    return 1
 
-	    node_Gamma.SetValue(gamma)
+		node_Gamma.SetValue(gamma)
 
-	    self.__gamma = gamma
+		self.__gamma = gamma
+
+		return 0
 
 	def Set_Gain(self,gain):
 
-	    node_Gain = PySpin.CFloatPtr(self.__nodemap.GetNode('Gain'))
-	    if not PySpin.IsAvailable(node_Gain) or not PySpin.IsWritable(node_Gain):
-	        print('\nUnable to set Gain (float retrieval). Aborting...\n')
+		node_Gain = PySpin.CFloatPtr(self.__nodemap.GetNode('Gain'))
+		if not PySpin.IsAvailable(node_Gain) or not PySpin.IsWritable(node_Gain):
+		    print('\nUnable to set Gain (float retrieval). Aborting...\n')
 
-	        if self.__init_complete is None:
-	            self.__init_complete=False
+		    if self.__init_complete is None:
+		        self.__init_complete=False
 
-	        else:
-	            self.__error_config= True
+		    else:
+		        self.__error_config= True
 
-	        return 1
+		    return 1
 
-	    node_Gain.SetValue(gain)
+		node_Gain.SetValue(gain)
 
-	    self.__gain = gain
+		self.__gain = gain
+
+		return 0
 
 	def Set_Sharpness(self,sharpness):
 
@@ -515,11 +567,13 @@ class Camera_PySpin():
 
 	    self.__sharpness = sharpness
 
+	    return 0
+
 	def Set_Exposure(self,exposure):
 
 		if self.__cam.ExposureTime.GetAccessMode() != PySpin.RW:
 		    print('Unable to set exposure time. Aborting...')
-		    return False
+		    return 1
 
 		# Ensure desired exposure time does not exceed the maximum
 
@@ -529,6 +583,7 @@ class Camera_PySpin():
 
 		self.__exposure = exposure
 
+		return 0 
 
 	def Set_Gain_Auto(self,boolean):
 		
@@ -585,6 +640,8 @@ class Camera_PySpin():
 
 		self.__gain_auto = boolean
 
+		return 0
+
 	def Set_Exposure_Auto(self,boolean):
 
 		if boolean == self.__exposure_auto:
@@ -621,6 +678,8 @@ class Camera_PySpin():
 
 		if trigger_mode:
 			self.Set_Trigger_Mode(True)
+
+		return 0
 
 	def Set_Sharpness_Auto(self,boolean):
 
@@ -677,6 +736,8 @@ class Camera_PySpin():
 
 		self.__sharpness_auto = boolean
 
+		return 0
+
 	def Set_Trigger_Mode(self,boolean):
 
 		if boolean == self.__trigger_mode:
@@ -703,6 +764,8 @@ class Camera_PySpin():
 		    self.__cam.TriggerMode.SetValue(PySpin.TriggerMode_Off)
 
 		self.__trigger_mode = boolean
+
+		return 0
 
 
 	def Set_Trigger_Source(self,line):
@@ -741,6 +804,7 @@ class Camera_PySpin():
 			self.__cam.TriggerSource.SetValue(PySpin.TriggerSource_Line2)
 
 		else:
+			print('Trigger Source Invalid')
 			return 1
 
 		self.__trigger_source = line
@@ -748,6 +812,8 @@ class Camera_PySpin():
 		if trigger_mode:
 
 			self.Set_Trigger_Mode(True)
+
+		return 0
 
 
 	def Set_Buffer_Mode(self,mode):
@@ -777,11 +843,13 @@ class Camera_PySpin():
 			self.__cam.AcquisitionMode.SetValue(PySpin.AcquisitionMode_MultiFrame)
 
 		else :
-
+			print('Buffer Mode Invalid')
 			return 1
 
 
 		self.__buffer_mode = mode
+
+		return 0
 
 	def Set_Buffer_Count(self,numbuffer):
 
@@ -789,12 +857,12 @@ class Camera_PySpin():
 		stream_buffer_count_mode = PySpin.CEnumerationPtr(streaming_node.GetNode('StreamBufferCountMode'))
 		if not PySpin.IsAvailable(stream_buffer_count_mode) or not PySpin.IsWritable(stream_buffer_count_mode):
 		    print('Unable to set Buffer Count Mode (node retrieval). Aborting...\n')
-		    return False
+		    return 1
 
 		stream_buffer_count_mode_manual = PySpin.CEnumEntryPtr(stream_buffer_count_mode.GetEntryByName('Manual'))
 		if not PySpin.IsAvailable(stream_buffer_count_mode_manual) or not PySpin.IsReadable(stream_buffer_count_mode_manual):
 		    print('Unable to set Buffer Count Mode entry (Entry retrieval). Aborting...\n')
-		    return False
+		    return 1
 
 		stream_buffer_count_mode.SetIntValue(stream_buffer_count_mode_manual.GetValue())
 
@@ -817,6 +885,8 @@ class Camera_PySpin():
 		buffer_count.SetValue(numbuffer)
 
 		self.__buffer_count = numbuffer
+
+		return 0
 
     
 	def Set_Buffer_Handling_Mode(self,mode):
@@ -850,9 +920,12 @@ class Camera_PySpin():
 		        handling_mode.SetIntValue(handling_mode_entry.GetValue())
 
 		else:
+			print('buffer handling mode invalid')
 			return 1
 
 		self.__buffer_handling_mode = mode
+
+		return 0
 
 	#############################################
 	# Mode Functions 
@@ -864,12 +937,12 @@ class Camera_PySpin():
 		self.Set_Sharpness_Auto(False)
 		self.Set_Sharpness(self.__sharpness)
 		self.Set_Exposure_Auto(False)
-		self.Set_Exposure(self.exposure)
+		self.Set_Exposure(self.__exposure)
 
 		self.Set_Trigger_Mode(True)
 
 
-	def Mode_Acquisition_Video(self):
+	def Mode_Acquisition_Video(self,nombre):
 
 		self.Set_Gain_Auto(True)
 		self.Set_Sharpness_Auto(True)
@@ -877,26 +950,109 @@ class Camera_PySpin():
 		self.Set_Trigger_Mode(False)
 
 
+	def Acquire_Image(self,nombre):
 
+		image_result = self.__cam.GetNextImage(500)
+
+		if image_result.IsIncomplete():
+		    print('Image incomplete with image status %d ...' % image_result.GetImageStatus())
+
+		else:
+
+		    image_converted = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
+
+		    filename = 'temp/'+nombre+'.bmp'
+
+		    image_converted.Save(filename)
+		    
+		    image_result.Release()
+
+	def Init_Acquisition(self):
+
+		self.__cam.BeginAcquisition()
+
+	def End_Acquisition(self):
+
+		self.__cam.EndAcquisition()
 	###################################
 	# Get Funcitons
 	###################################
 
-	def Get_Device_Info(self):
+
+	def get_device_info(self):
 
 		return self.__device_info
 
+	def get_init_complete(self):
 
-	def Reset(self):
-		####presenta error en spinnakker#####
-		return self.__cam.DeviceReset.Execute()
+		return self.__init_complete
 
+	def get_error_config(self):
+		
+		return self.__error_config 
 
+	def get_trigger_mode(self):
+
+		return self.__trigger_mode
+
+	def get_exposure_auto(self):
+		
+		return self.__exposure_auto
+
+	def get_gain_auto(self):
+		
+		return self.__gain_auto
+
+	def get_sharpness_auto(self):
+
+		return self.__sharpness_auto
+
+	def get_trigger_mode(self):
+
+		return self.__trigger_mode
+
+	def get_buffer_mode(self):
+
+		return self.__buffer_mode
+
+	def get_buffer_count(self):
+
+		return self.__buffer_count
+
+	def get_buffer_handling_mode(self):
+
+		return self.__buffer_handling_mode
+
+	def get_gain(self):
+
+		return self.__gain
+
+	def get_blacklevel(self):
+
+		return self.__blacklevel
+
+	def get_sharpness(self):
+
+		return self.__sharpness
+
+	def get_gamma(self):
+
+		return self.__gamma
+
+	def get_exposure(self):
+
+		return self.__exposure
 
 	##################################
 	# Special Functions
 	################################
 
+	def Reset(self):
+		####presenta error en spinnakker#####
+		return self.__cam.DeviceReset.Execute()
+
 	def __del__(self):
-		self.Mode_Video()
+
+		self.Mode_Acquisition_Video()
+
 		self.__cam.DeInit()
