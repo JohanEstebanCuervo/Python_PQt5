@@ -942,7 +942,7 @@ class Camera_PySpin():
 		self.Set_Trigger_Mode(True)
 
 
-	def Mode_Acquisition_Video(self,nombre):
+	def Mode_Acquisition_Video(self):
 
 		self.Set_Gain_Auto(True)
 		self.Set_Sharpness_Auto(True)

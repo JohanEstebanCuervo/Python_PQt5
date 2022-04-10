@@ -36,6 +36,8 @@ class AMILI_App(QtWidgets.QMainWindow):
 		self.grip = QtWidgets.QSizeGrip(self)
 		self.grip.resize(self.gripSize, self.gripSize)
 
+		self.Patch_Acquisition = QDir(QDir.currentPath()+'/temp')
+
 		#carpeta temporal 
 		subprocess.run('md temp',shell=True)
 	##########################################
@@ -131,6 +133,48 @@ class AMILI_App(QtWidgets.QMainWindow):
 				self.camera.Acquire_Image(led[2])
 
 			self.camera.End_Acquisition()
+
+		self.Charge_Images()
+
+
+	def Charge_Images(self):
+
+		Imagenes = self.Patch_Acquisition.entryInfoList(["*.jpg", "*.png", "*.ico", "*.bmp"],
+		                                                QDir.Files, QDir.Name)
+
+		self.imagenesCarpeta = [imagen.absoluteFilePath() for imagen in Imagenes]
+
+		for i,nombreimagen in enumerate(self.imagenesCarpeta[3:10]):
+
+			imagen = QImage(nombreimagen)
+			imagen = QPixmap.fromImage(imagen)
+
+			#if imagen.width() > 100 or imagen.height() > 100:
+			#	imagen = imagen.scaled(100, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+			if i == 0:
+				self.lb_list_imag_1.setPixmap(imagen)
+				self.lb_Principal_imag.setPixmap(imagen)
+
+			if i == 1:
+				self.lb_list_imag_2.setPixmap(imagen)
+
+			if i == 2:
+				self.lb_list_imag_3.setPixmap(imagen)
+
+			if i == 3:
+				self.lb_list_imag_4.setPixmap(imagen)
+
+			if i == 4:
+				self.lb_list_imag_5.setPixmap(imagen)
+
+			if i == 5:
+				self.lb_list_imag_6.setPixmap(imagen)
+
+			if i == 6:
+				self.lb_list_imag_7.setPixmap(imagen)
+
+
 
 
 
@@ -665,7 +709,7 @@ class AMILI_App(QtWidgets.QMainWindow):
 		self.close()
 
 
-		subprocess.run('rd temp',shell=True)
+		#subprocess.run('rd /s temp',shell=True)
 
 	def __del__(self):
 

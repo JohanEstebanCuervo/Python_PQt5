@@ -842,10 +842,19 @@ background-color:  rgb(255, 0, 0);
              <property name="text">
               <string/>
              </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
             </widget>
            </item>
            <item>
             <widget class="QFrame" name="fm_list_imag">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>150</height>
+              </size>
+             </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
