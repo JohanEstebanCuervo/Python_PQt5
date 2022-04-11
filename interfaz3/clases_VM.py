@@ -8,7 +8,7 @@ class Corona_Multiespectral:
 	def __init__(self, puerto,bps=57600,time_sleep_c=1e-2,timeshot=1e-2):
 		print("Iniciando Corona_Multiespectral")
 		self.__timesleepc = time_sleep_c
-		self.__shot_mesage = 'W'
+		self.__shot_message = 'W'
 		self.__leds = ['M01N','M02N','M03N','M04N','M05N','M06N','M07N','M08N','M09N','M0AN','M0BN','M0CN','M0DN','M0EN','M0FN']
 		self.__timeshot = timeshot
 		try:		
@@ -20,7 +20,7 @@ class Corona_Multiespectral:
 			print("No se ejecuto el puerto serial")
 
 
-		pwm_leds = ["J1090K","J2090K","J3090K","J4090K","J5090K","J6090K","J7090K","J8090K","J9090K","JA090K","JB090K","JC090K","JD080K","JE010K","JF010K"]
+		pwm_leds = '["J1090K","J2090K","J3090K","J4090K","J5090K","J6090K","J7090K","J8090K","J9090K","JA090K","JB090K","JC090K","JD080K","JE010K","JF010K"]'
 		self.set_PWM_Leds(pwm_leds)
 		self.set_shot_leds(3)
 		message = "T006014001U"
@@ -55,7 +55,7 @@ class Corona_Multiespectral:
 				except:
 					print("error en la comunicacion no se configuro los tiempos de trigger")
 					self.__comunication_state=False
-					break
+					return 1
 
 
 			if bandera==0:
@@ -88,23 +88,18 @@ class Corona_Multiespectral:
 			print("Valor incorrecto el mensaje solo debe contener un 0 o un 1")
 			return 1
 
-		if len(value)==1:
 
-			message =  'T'+ value + self.__shot_time_trigger + self.__shot_time_flash + self.__shot_time_timeout + 'U'
+		message =  'T'+ str(val) + self.__shot_time_trigger + self.__shot_time_flash + self.__shot_time_timeout + 'U'
 
-			res = self.set_shot_time_trigger_flash_timeout(message)
 
-			if res!=0:
-				print('Error en la configuración del tiempo del modo de disparo')
-				return 1
-
-			else:
-
-				return 0 
+		if self.set_shot_time_trigger_flash_timeout(message):
+			print('Error en la configuración del tiempo del modo de disparo')
+			return 1
 
 		else:
-			print("Valor incorrecto el mensaje solo debe contener un 0 o un 1")
-			return 1
+
+			return 0 
+
 
 	def set_shot_time_trigger(self,value):
 		try:
@@ -117,9 +112,7 @@ class Corona_Multiespectral:
 
 			message =  'T'+ self.__shot_mode + value + self.__shot_time_flash + self.__shot_time_timeout + 'U'
 
-			res = self.set_shot_time_trigger_flash_timeout(message)
-
-			if res!=0:
+			if self.set_shot_time_trigger_flash_timeout(message):
 				print('Error en la configuración del tiempo de trigger')
 				return 1
 
@@ -142,9 +135,7 @@ class Corona_Multiespectral:
 
 			message =  'T'+ self.__shot_mode + self.__shot_time_trigger + value + self.__shot_time_timeout + 'U'
 
-			res = self.set_shot_time_trigger_flash_timeout(message)
-
-			if res!=0:
+			if self.set_shot_time_trigger_flash_timeout(message):
 				print('Error en la configuración del tiempo de flash')
 				return 1
 
@@ -167,9 +158,7 @@ class Corona_Multiespectral:
 
 			message =  'T'+ self.__shot_mode + self.__shot_time_trigger + self.__shot_time_flash + value + 'U'
 
-			res = self.set_shot_time_trigger_flash_timeout(message)
-
-			if res!=0:
+			if self.set_shot_time_trigger_flash_timeout(message):
 				print('Error en la configuración del tiempo muerto')
 				return 1
 
@@ -187,7 +176,7 @@ class Corona_Multiespectral:
 			bandera=0
 			iteraciones=0
 			while bandera==0 and iteraciones<5:
-					if True:
+					try:
 						self.__comunication.write(self.__leds[pos_led].encode('utf-8'))
 						time.sleep(self.__timesleepc)
 
@@ -201,10 +190,10 @@ class Corona_Multiespectral:
 
 						iteraciones+=1
 
-					else:
+					except:
 						print("error en la comunicacion no se configuro el led para el disparo")
 						self.__comunication_state=False
-						break
+						return 1
 
 			if bandera==0:
 				print("No se recibio una respuesta correcta de la corona.")
@@ -219,7 +208,7 @@ class Corona_Multiespectral:
 	def set_PWM_Leds(self,pwm_leds): #medio garantiza que la corona este configurada si despues de configurar la corona esta se desconecta pierde la configuracion
 
 		if self.__comunication_state:
-			result=True
+
 			for pwm_led in pwm_leds:
 
 				bandera=0
@@ -242,29 +231,34 @@ class Corona_Multiespectral:
 						except:
 							print("error en la comunicacion")
 							self.__comunication_state=False
-							break
+							return 1
 
 		    
 				if bandera==0:
 					print("Error al configurar el PWM de la corona")
-					result= False
-					break
+					return 1
 
 
-			if result:
-				self.__PWM_leds=pwm_leds
+			self.__PWM_leds=pwm_leds
+			return 0
+
 
 
 		else:
 			print("Error Comunicación no iniciada No es posible configurar el PWM")
+			return 1
 
-	def set_shot_mesage(self,mensaje):
+	def set_shot_message(self,message):
 
-		self.__shot_mesage = mensaje
+		self.__shot_message = message
 
 	def set_time_sleepc(self,time):
 
 		self.__timesleepc = time
+
+	def set_timeshot(self,timeshot):
+
+		self.__timeshot = timeshot
 
 	#########################
 
@@ -308,6 +302,10 @@ class Corona_Multiespectral:
 
 		return self.__shot_time_timeout
 
+	def get_timeshot(self):
+
+		return self.__timeshot
+
 	##############################
 
 	#Methods
@@ -318,7 +316,7 @@ class Corona_Multiespectral:
 	def shot(self):
 
 		if self.__comunication_state:
-			self.__comunication.write(self.__shot_mesage.encode('utf-8'))
+			self.__comunication.write(self.__shot_message.encode('utf-8'))
 			time.sleep(self.__timesleepc)
 			if self.__comunication.inWaiting()==1:    
 					Check = self.__comunication.read()
@@ -340,11 +338,17 @@ class Corona_Multiespectral:
 
 		for i in range(len(self.__leds)):
 
-			self.set_shot_leds(i)
+			if self.set_shot_leds(i):
 
-			self.shot()
+				return 1
+
+			if self.shot():
+
+				return 1
 
 			time.sleep(self.__timeshot)
+
+		return 0
 
 
 
@@ -366,7 +370,7 @@ class Camera_PySpin():
 	def __init__(self,pyspin_camlis,Gamma=1.25,ExposureTime=8000,Gain=0,Sharpness=1800,BlackLevel=0.7,BufferMode='Continuous',BufferHandlingMode = 'NewestOnly',TriggerSource= 'Line2',BufferCount=3):
 		try:
 
-			self.__init_states()
+			self.__init_atributes()
 
 			self.__cam = pyspin_camlis
 
@@ -442,17 +446,23 @@ class Camera_PySpin():
 
 		self.__init_complete = True
 		
-	def __init_states(self):
+	def __init_atributes(self):
+		self.__gamma = None
+		self.__blacklevel = None
 		self.__error_config = False
 		self.__init_complete = None
 		self.__trigger_mode = None
 		self.__exposure_auto = None
+		self.__exposure = None
 		self.__gain_auto = None
+		self.__gain = None
 		self.__sharpness_auto = None
-		self.__trigger_mode=None
+		self.__sharpness = None
 		self.__buffer_mode = None
 		self.__buffer_count= None
 		self.__buffer_handling_mode = None
+		self.__trigger_source= None
+
 	##################################
 	#  Device info 
 	##################################
@@ -974,6 +984,7 @@ class Camera_PySpin():
 	def End_Acquisition(self):
 
 		self.__cam.EndAcquisition()
+
 	###################################
 	# Get Funcitons
 	###################################
@@ -1007,9 +1018,9 @@ class Camera_PySpin():
 
 		return self.__sharpness_auto
 
-	def get_trigger_mode(self):
+	def get_trigger_source(self):
 
-		return self.__trigger_mode
+		return self.__trigger_source
 
 	def get_buffer_mode(self):
 
