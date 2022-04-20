@@ -1067,3 +1067,6 @@ class Camera_PySpin():
 		self.Mode_Acquisition_Video()
 
 		self.__cam.DeInit()
+
+
+		############ prueba
