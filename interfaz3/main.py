@@ -45,7 +45,7 @@ class AMILI_App(QtWidgets.QMainWindow):
 	##########################################
 
 		self.timer =QTimer()
-		self.timer.timeout.connect(self.check_connection)
+		self.timer.timeout.connect(self.Check_Conection)
 		self.timer.start(4000)
 
 
@@ -182,7 +182,7 @@ class AMILI_App(QtWidgets.QMainWindow):
     #########################################
     #########################################
 
-	def check_connection(self):
+	def Check_Conection(self):
 
 		if self.corona_init:
 			self.pb_error_conection_corona.setStyleSheet("background-color : green; border-radius: 10px")
@@ -722,6 +722,7 @@ class AMILI_App(QtWidgets.QMainWindow):
 
 
 if __name__ == "__main__":
+	
 	app = QtWidgets.QApplication([])
 	mi_app = AMILI_App()
 	mi_app.show()
