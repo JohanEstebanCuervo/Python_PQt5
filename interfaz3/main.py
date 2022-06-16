@@ -290,7 +290,7 @@ class AMILI_App(QtWidgets.QMainWindow):
 
 		puerto = self.cb_listPort.currentText()
 		try:
-			self.corona = Corona_Multiespectral(puerto,time_sleep_c=1e-2)
+			self.corona = Corona_Multiespectral(puerto,time_sleep_c=0.5)
 			if self.corona.get_comunication_state():
 				
 
@@ -317,6 +317,10 @@ class AMILI_App(QtWidgets.QMainWindow):
 				self.fm_settings_corona.show()
 				self.corona_init = True
 				self.lb_init_c_error.setText("")
+
+			else:
+
+				print('Estado de comunicación desconectado')
 
 		except:
 				self.lb_init_c_error.setText("No se ha podido iniciar la corona")

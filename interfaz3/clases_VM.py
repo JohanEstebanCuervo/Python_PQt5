@@ -12,7 +12,7 @@ import Functions_ColorReproduction as fcr
 class Corona_Multiespectral:
 
 	"""docstring for Corona_Multiespectral"""
-	def __init__(self, puerto,bps=57600,time_sleep_c=1e-2,timeshot=1e-2):
+	def __init__(self, puerto,bps=57600,time_sleep_c=0.1,timeshot=1e-2):
 		print("Iniciando Corona_Multiespectral")
 		self.__timesleepc = time_sleep_c
 		self.__shot_message = 'W'
@@ -27,7 +27,7 @@ class Corona_Multiespectral:
 			print("No se ejecuto el puerto serial")
 
 
-		pwm_leds = '["J1090K","J2090K","J3090K","J4090K","J5090K","J6090K","J7090K","J8090K","J9090K","JA090K","JB090K","JC090K","JD080K","JE010K","JF010K"]'
+		pwm_leds = ["J1090K","J2090K","J3090K","J4090K","J5090K","J6090K","J7090K","J8090K","J9090K","JA090K","JB090K","JC090K","JD080K","JE010K","JF010K"]
 		self.set_PWM_Leds(pwm_leds)
 		self.set_shot_leds(3)
 		message = "T006014001U"
@@ -39,49 +39,21 @@ class Corona_Multiespectral:
 	# SET functions
 
 	#################################
-
 	def set_shot_time_trigger_flash_timeout(self,message):
-		if self.__comunication_state:
-			bandera=0
-			iteraciones=0
-			while bandera==0 and iteraciones<5:
-				try:
-					self.__comunication.write(message.encode('utf-8'))
-					time.sleep(self.__timesleepc)
+		
+		if self.tx_msg(message):
 
-					Check=''
-					if self.__comunication.inWaiting()==1:
-					    
-					    Check = self.__comunication.read()
-					    
-					if Check == b'O':
-					    bandera=1
-
-					iteraciones+=1
-
-				except:
-					print("error en la comunicacion no se configuro los tiempos de trigger")
-					self.__comunication_state=False
-					return 1
-
-
-			if bandera==0:
-
-				print("No se recibio una respuesta correcta de la corona.")
-				return 1
-
-			else:
-				self.__shot_mode = message[1]
-				self.__shot_time_trigger= message[2:4]
-				self.__shot_time_flash = message[4:7]
-				self.__shot_time_timeout =message[7:10]
-
-				return 0
+			print("Error al configurar los tiempos de la corona")
+			return 1
 
 		else:
-			print("Error Comunicación no iniciada No es posible configurar los tiempos de trigger")
-			self.__comunication_state=False
-			return 1
+			self.__shot_mode = message[1]
+			self.__shot_time_trigger= message[2:4]
+			self.__shot_time_flash = message[4:7]
+			self.__shot_time_timeout =message[7:10]
+
+			return 0
+
 
 	def set_shot_mode(self,value):
 		try:
@@ -179,81 +151,24 @@ class Corona_Multiespectral:
 
 	def set_shot_leds(self,pos_led):
 
-		if self.__comunication_state:
-			bandera=0
-			iteraciones=0
-			while bandera==0 and iteraciones<5:
-					try:
-						self.__comunication.write(self.__leds[pos_led].encode('utf-8'))
-						time.sleep(self.__timesleepc)
-
-						Check=''
-						if self.__comunication.inWaiting()==1:
-						    
-						    Check = self.__comunication.read()
-						    
-						if Check == b'O':
-						    bandera=1
-
-						iteraciones+=1
-
-					except:
-						print("error en la comunicacion no se configuro el led para el disparo")
-						self.__comunication_state=False
-						return 1
-
-			if bandera==0:
-				print("No se recibio una respuesta correcta de la corona.")
+		if self.tx_msg(self.__leds[pos_led]):
+				print("Error al configurar el led "+str(pos_led+1)+" en la corona")
 				return 1
 
-			else:
-				return 0 
-		else:
-			print("Error Comunicación no iniciada No es posible configurar los leds para el disparo")
-			return 1
 
 	def set_PWM_Leds(self,pwm_leds): #medio garantiza que la corona este configurada si despues de configurar la corona esta se desconecta pierde la configuracion
 
-		if self.__comunication_state:
-
-			for pwm_led in pwm_leds:
-
-				bandera=0
-				iteraciones=0
-				while bandera==0 and iteraciones<5:
-						try:
-							self.__comunication.write(pwm_led.encode('utf-8'))
-							time.sleep(self.__timesleepc)
-
-							Check=''
-							if self.__comunication.inWaiting()==1:
-							    
-							    Check = self.__comunication.read()
-							    
-							if Check == b'O':
-							    bandera=1
-
-							iteraciones+=1
-
-						except:
-							print("error en la comunicacion")
-							self.__comunication_state=False
-							return 1
-
-		    
-				if bandera==0:
-					print("Error al configurar el PWM de la corona")
-					return 1
+		for pwm_led in pwm_leds:
+			
+			if self.tx_msg(pwm_led):
+				print("Error al configurar el PWM de la corona")
+				return 1
 
 
-			self.__PWM_leds=pwm_leds
-			return 0
+		self.__PWM_leds=pwm_leds
 
+		return 0
 
-
-		else:
-			print("Error Comunicación no iniciada No es posible configurar el PWM")
-			return 1
 
 	def set_shot_message(self,message):
 
@@ -291,7 +206,7 @@ class Corona_Multiespectral:
 
 	def get_shot_message(self):
 
-		return self.__shot_mesage
+		return self.__shot_message
 
 	def get_shot_mode(self):
 
@@ -318,6 +233,46 @@ class Corona_Multiespectral:
 	#Methods
 
 	##############################
+
+	def tx_msg(self,message,comp=True):
+		print(message)
+		if self.__comunication_state:
+			bandera=0
+			iteraciones=0
+			if ~comp:   #Si no se necesita comprobacion solo ingresa al while 1 vez
+				iteraciones=4
+
+			while bandera==0 and iteraciones<5 :
+					try:
+						self.__comunication.write(message.encode('utf-8'))
+						time.sleep(self.__timesleepc)
+
+						Check=''
+						if self.__comunication.in_waiting>0:
+						    
+						    Check = self.__comunication.read()
+						    
+						if Check == b'O':
+						    bandera=1
+
+						iteraciones+=1
+
+					except:
+						print("error en la comunicacion")
+						self.__comunication_state=False
+						return 1
+
+	    
+			if bandera==0 and comp:
+				print("No se recibio respuesta")
+				return 1
+
+
+			return 0
+
+		else:
+			print("Comunicación no iniciada No es posible enviar el mensaje")
+			return 1
 
 
 	def shot(self):
