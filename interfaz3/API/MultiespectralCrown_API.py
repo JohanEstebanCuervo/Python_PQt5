@@ -1,9 +1,5 @@
 import serial
 import time
-import PySpin
-import os
-import numpy as np
-import Functions_ColorReproduction as fcr
 
 
 class Corona_Multiespectral:

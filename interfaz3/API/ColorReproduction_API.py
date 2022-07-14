@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import Functions_ColorReproduction as fcr
+import methods.Functions_ColorReproduction as fcr
 
 
 class Color_Reprocution:
