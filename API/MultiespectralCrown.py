@@ -3,7 +3,7 @@ import time
 
 from API.Iluminator_MultiSpectral import *
 
-class Corona_Multiespectral(Iluminator_MultiSpectral):
+class MultiSpectral_Crown(Iluminator_MultiSpectral):
 
     """docstring for Corona_Multiespectral"""
 

@@ -98,7 +98,13 @@ class Menu(QFrame):
         Stacked_Pages = self.App.Stacked_Pages
         self.pb_menu_capture.clicked.connect(lambda: Stacked_Pages.setCurrentWidget(Stacked_Pages.page_capture))
         self.pb_menu_camera.clicked.connect(lambda: Stacked_Pages.setCurrentWidget(Stacked_Pages.page_camera))
-        self.pb_menu_corona.clicked.connect(lambda: Stacked_Pages.setCurrentWidget(Stacked_Pages.page_corona))
+        self.pb_menu_corona.clicked.connect(self.Control_pb_menu_corona)
         self.pb_menu_colorReproduction.clicked.connect(lambda: Stacked_Pages.setCurrentWidget(Stacked_Pages.page_colorReproduction))
         self.pb_menu_settings.clicked.connect(lambda: Stacked_Pages.setCurrentWidget(Stacked_Pages.page_settings))
 
+    def Control_pb_menu_corona(self):
+        if not self.App.Core_App.iluminator_init:
+            self.App.Core_App.Update_list_ports(Update_cb_listPort=True)
+
+        Stacked_Pages = self.App.Stacked_Pages
+        Stacked_Pages.setCurrentWidget(Stacked_Pages.page_corona)

@@ -13,6 +13,10 @@ class Iluminator_MultiSpectral:
         self.__correct_tx = b'O'
         self.__PWM_leds = None
         self.__leds = None
+        self.__shot_time_trigger = None
+        self.__shot_time_timeout = None
+        self.__shot_mode = None
+        self.__shot_time_flash = None
 
         try:
             self.__comunication = serial.Serial(puerto, bps)
@@ -28,9 +32,29 @@ class Iluminator_MultiSpectral:
                 self.__comunication_state = False
                 print("No se ejecuto el puerto serial")
 
+        message = "T006014001U"
+        self.set_shot_time_trigger_flash_timeout(message)
+
+        print('Comunicacion Correcta')
+
     #################################
     # SET functions
     #################################
+    def set_shot_time_trigger_flash_timeout(self, message):
+
+        if self.tx_msg(message):
+
+            print("Error al configurar los tiempos de la corona")
+            return 1
+
+        else:
+            
+            self.__shot_mode = message[1]
+            self.__shot_time_trigger = message[2:4]
+            self.__shot_time_flash = message[4:7]
+            self.__shot_time_timeout = message[7:10]
+
+            return 0
 
     def set_shot_mode(self, value):
 

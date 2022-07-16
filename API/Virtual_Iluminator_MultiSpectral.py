@@ -21,27 +21,10 @@ class Virtual_Iluminator_MultiSpectral(Iluminator_MultiSpectral):
 
         self.set_PWM_Leds(pwm_leds)
         self.set_shot_leds(3)
-        message = "T006014001U"
-        self.set_shot_time_trigger_flash_timeout(message)
 
         self.Wavelengths = ['410', '450', '470', '490', '505', '530', '560', '590', '600',
                             '620', '630', '650', '720', '840', '960']
 
-    #################################
-    # SET functions
-    #################################
 
-    def set_shot_time_trigger_flash_timeout(self, message):
+        print('Iluminador iniciado correctamente')
 
-        if self.tx_msg(message):
-
-            print("Error al configurar los tiempos de la corona")
-            return 1
-
-        else:
-            self.__shot_mode = message[1]
-            self.__shot_time_trigger = message[2:4]
-            self.__shot_time_flash = message[4:7]
-            self.__shot_time_timeout = message[7:10]
-
-            return 0

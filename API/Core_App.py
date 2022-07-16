@@ -1,5 +1,6 @@
 from API.Flea3Cam_API import *
-from API.MultiespectralCrown_API import *
+from API.MultiespectralCrown import *
+from API.Virtual_Iluminator_MultiSpectral import *
 from API.ColorReproduction_API import *
 
 import methods.Funciones_Adquisicion as Fun_Ad
@@ -23,13 +24,13 @@ class Core_App:
         self.timer = QTimer()
         self.timer.timeout.connect(self.Check_Conection)
         self.timer.start(2000)
-        self.corona_init = False
+        self.iluminator_init = False
 
     def Check_Conection(self):
         self.Update_list_ports()
 
-        if self.corona_init:
-            
+        if self.iluminator_init:
+
             bandera = 0
             for port in self.list_ports:
                 if(port == self.App.Stacked_Pages.page_corona.lb_sc_port.text()):
@@ -37,7 +38,7 @@ class Core_App:
                     break
 
             if bandera == 0:
-                self.corona_init = False
+                self.iluminator_init = False
                 self.pb_error_conection_corona.setStyleSheet("background-color : red; border-radius: 10px")
                 self.lb_error_conection_corona.setText("Corona desconectada")
                 self.fm_init_corona.show()
@@ -55,3 +56,29 @@ class Core_App:
 
             elif len(self.list_ports) == 1:
                 self.App.Stacked_Pages.page_corona.cb_listPort.addItem(list_ports[0])
+
+
+    def Construct_Iluminator(self,puerto):
+
+        if puerto == 'VirtualIluminator':
+
+            self.Iluminator_MultiSpectral = Virtual_Iluminator_MultiSpectral('virtual')
+            self.iluminator_init = True
+
+        else:
+
+            Iluminator = Fun_Ad.indetify_iluminator(puerto)
+
+            if Iluminator == 'No device identify':
+
+                self.App.Stacked_Pages.page_corona.lb_init_c_error.setText("Error al iniciar el Iluminador")
+
+
+            if Iluminator == 'MultiSpectralCrown':
+
+                self.Iluminator_MultiSpectral = MultiespectralCrown(puerto)
+                self.iluminator_init = True
+
+            if Iluminator == 'Iluminator_MultiSpectral':
+                # Implementación futura iluminador de victor
+                pass

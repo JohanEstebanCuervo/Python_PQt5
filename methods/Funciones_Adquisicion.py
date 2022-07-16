@@ -9,6 +9,9 @@ Created on Thu Mar 24 23:42:16 2022
 
 import subprocess
 import PySpin
+import serial
+import time
+
 # Esta funcion busca los puertos serial en uso. En caso de conocer el puerto serial se puede cambiar el parametro port='Nombre_del_puerto'
 def Serial_Port_Select(port=0,terminal=True):
     
@@ -92,7 +95,49 @@ def Cameras_List():
     system.ReleaseInstance()
 
     return cam_name_list
+
+def indetify_iluminator(puerto):
+
+    try:
+        comunication = serial.Serial(puerto, 57600)
+        message = 'Version_Firmware'
+        comunication.write(message.encode('utf-8'))
+        time.sleep(0.3)
+
+        if comunication.in_waiting > 0:
+
+            rx = comunication.read()
+            rx = rx.decode('utf-8')
+            if rx == 'Iluminator_MultiSpectral':
+                comunication.close()
+                return 'Iluminator_MultiSpectral'
+
         
+        message = 'W'
+        comunication.write(message.encode('utf-8'))
+        time.sleep(0.3)
+
+        if comunication.in_waiting > 0:
+
+            rx = comunication.read()
+            rx = rx.decode('utf-8')
+            if rx == 'O':
+                comunication.close()
+                return 'MultiSpectralCrown'
+
+        else:
+            comunication.close()
+            return 'No device identify'
+
+        
+    except:
+
+        print('Error en la identificación de la corona. Comunicación Fracasada')
+        
+        return 'No device identify'
+
+        
+
 if __name__=='__main__':
     nombre = Serial_Port_Select()
 

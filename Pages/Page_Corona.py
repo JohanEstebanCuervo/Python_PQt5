@@ -303,20 +303,56 @@ class Page_Corona(QWidget):
     def Control_Buttons(self):
 
         #self.pb_init_corona.clicked.connect(self.control_pb_init_corona)
-        self.pb_sc_leds.clicked.connect(self.control_pb_sc_leds)
-        self.pb_sc_PWMleds.clicked.connect(self.control_pb_sc_PWMleds)
+        self.pb_sc_leds.clicked.connect(self.Control_pb_sc_leds)
+        self.pb_sc_PWMleds.clicked.connect(self.Control_pb_sc_PWMleds)
+        self.pb_init_corona.clicked.connect(self.Control_pb_init_corona)
 
-    def control_pb_sc_leds(self):
+    def Control_pb_sc_leds(self):
 
         self.fm_leds.show()
         self.fm_PWM.hide()
 
-    def control_pb_sc_PWMleds(self):
+    def Control_pb_sc_PWMleds(self):
 
         self.fm_leds.hide()
         self.fm_PWM.show()
 
         self.fm_PWM_led_hs()
+
+    def Control_pb_init_corona(self):
+
+        puerto = self.cb_listPort.currentText()
+
+        self.App.Core_App.Construct_Iluminator(puerto)
+
+
+        if self.App.Core_App.iluminator_init:
+
+            Iluminator = self.App.Core_App.Iluminator_MultiSpectral
+            if Iluminator.get_comunication_state():
+
+                #self.cb_buttons_checked("U")
+
+                #self.le_PWM_led_checked("U")
+
+                self.lb_sc_port.setText(puerto)
+                self.le_timeSleepc.setText(str(Iluminator.get_time_sleepc()))
+                self.le_shotMessage.setText(str(Iluminator.get_shot_message()))
+                self.le_timeTrigger.setText(str(Iluminator.get_shot_time_trigger()))
+                self.le_timeOut.setText(str(Iluminator.get_shot_time_out()))
+                self.le_shotMode.setText(str(Iluminator.get_shot_mode()))
+                self.le_timeFlash.setText(str(Iluminator.get_shot_time_flash()))
+
+        #Adquisition Multispectral Interfaz Leds Ilumination
+
+                self.fm_init_corona.hide()
+                self.fm_settings_corona.show()
+                self.lb_init_c_error.setText("")
+
+            else:
+                self.App.Core_App.iluminator_init = False
+                print('Estado de comunicación desconectado')
+
 
     def fm_PWM_led_hs(self):
 
