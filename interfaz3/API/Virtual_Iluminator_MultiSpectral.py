@@ -1,14 +1,11 @@
-import serial
-import time
-
 from API.Iluminator_MultiSpectral import *
 
-class Corona_Multiespectral(Iluminator_MultiSpectral):
+class Virtual_Iluminator_MultiSpectral(Iluminator_MultiSpectral):
 
-    """docstring for Corona_Multiespectral"""
+    """docstring for Virtual_Iluminator_MultiSpectral"""
 
     def __init__(self, puerto, bps=57600, time_sleep_c=0.1, timeshot=1e-2, Virtual_Mode=False):
-        super(Corona_Multiespectral, self).__init__(puerto, bps, time_sleep_c, timeshot, Virtual_Mode)
+        super(Virtual_Iluminator_MultiSpectral, self).__init__(puerto, bps, time_sleep_c, timeshot, True)
 
         leds = ['M01N', 'M02N', 'M03N', 'M04N', 'M05N',
                 'M06N', 'M07N', 'M08N', 'M09N', 'M0AN',
