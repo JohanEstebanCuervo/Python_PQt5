@@ -123,9 +123,8 @@ class Page_Capture(QWidget):
         self.lb_wavelenth_capture = QLabel(self.fm_control_capture)
         self.lb_wavelenth_capture.setObjectName(u"lb_wavelenth_capture")
         self.lb_wavelenth_capture.setAlignment(Qt.AlignCenter)
-        
-        self.LayoutH_fm_control_capture.addWidget(self.lb_wavelenth_capture)
 
+        self.LayoutH_fm_control_capture.addWidget(self.lb_wavelenth_capture)
 
         self.LayoutV_Prin.addWidget(self.fm_control_capture)
 
@@ -200,11 +199,9 @@ class Page_Capture(QWidget):
 
         self.LayoutH_fm_list_imag.addWidget(self.lb_list_imag_7)
 
-
         self.LayoutV_Prin.addWidget(self.fm_list_imag)
 
         self.LayoutV_Prin.setStretch(2, 20)
 
     def Names_Page(self):
         self.lb_wavelenth_capture.setText('longitud de imagen')
-        

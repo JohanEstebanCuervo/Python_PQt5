@@ -15,12 +15,11 @@ from Body.Stacked_Pages import *
 # Librerias PyQt
 ################################
 
-from PyQt5 import QtCore, QtWidgets, uic
-
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtCore import QDir, QTimer
+from PyQt5 import QtCore, QtWidgets
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QFrame, QHBoxLayout, QStatusBar
+
+
 class AMILI_App(QtWidgets.QMainWindow):
 
     """docstring for Multiespectral_App"""
@@ -60,7 +59,6 @@ class AMILI_App(QtWidgets.QMainWindow):
 
         self.verticalLayout.addWidget(self.Barra_Principal)
 
-
         self.Ventana_Principal = QFrame(self.centralwidget)
         self.Ventana_Principal.setObjectName(u"Ventana_Principal")
         self.Ventana_Principal.setStyleSheet(u"QFrame{\n"
@@ -91,14 +89,12 @@ class AMILI_App(QtWidgets.QMainWindow):
 
         self.horizontalLayout_2.addWidget(self.Stacked_Pages)
 
-
         self.verticalLayout.addWidget(self.Ventana_Principal)
 
         self.setCentralWidget(self.centralwidget)
         self.statusBar = QStatusBar(self)
         self.statusBar.setObjectName(u"statusBar")
         self.setStatusBar(self.statusBar)
-
 
     def desplegar_menu(self, event):
 

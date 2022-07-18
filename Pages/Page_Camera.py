@@ -13,7 +13,6 @@ class Page_Camera(QWidget):
 
         self.Names_Page()
 
-        #self.fm_settings_camera.hide()
         self.fm_init_camera.hide()
 
     def Structure_Page(self):
@@ -49,37 +48,37 @@ class Page_Camera(QWidget):
         self.LayoutG_fm_buttons_sca.setObjectName(u"LayoutG_fm_buttons_sca")
         self.label_21 = QLabel(self.fm_buttons_sca)
         self.label_21.setObjectName(u"label_21")
-        self.label_21.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_21.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_21, 9, 0, 1, 1)
 
         self.label_19 = QLabel(self.fm_buttons_sca)
         self.label_19.setObjectName(u"label_19")
-        self.label_19.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_19.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_19, 11, 0, 1, 1)
 
         self.label_22 = QLabel(self.fm_buttons_sca)
         self.label_22.setObjectName(u"label_22")
-        self.label_22.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_22.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_22, 8, 0, 1, 1)
 
         self.label_13 = QLabel(self.fm_buttons_sca)
         self.label_13.setObjectName(u"label_13")
-        self.label_13.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_13.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_13, 6, 0, 1, 1)
 
         self.label_6 = QLabel(self.fm_buttons_sca)
         self.label_6.setObjectName(u"label_6")
-        self.label_6.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_6.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_6, 1, 0, 1, 1)
 
         self.label_3 = QLabel(self.fm_buttons_sca)
         self.label_3.setObjectName(u"label_3")
-        self.label_3.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_3.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_3, 0, 0, 1, 1)
 
@@ -95,13 +94,13 @@ class Page_Camera(QWidget):
 
         self.label_14 = QLabel(self.fm_buttons_sca)
         self.label_14.setObjectName(u"label_14")
-        self.label_14.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_14.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_14, 2, 0, 1, 1)
 
         self.label_16 = QLabel(self.fm_buttons_sca)
         self.label_16.setObjectName(u"label_16")
-        self.label_16.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_16.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_16, 4, 0, 1, 1)
 
@@ -112,7 +111,7 @@ class Page_Camera(QWidget):
 
         self.label_15 = QLabel(self.fm_buttons_sca)
         self.label_15.setObjectName(u"label_15")
-        self.label_15.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_15.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_15, 3, 0, 1, 1)
 
@@ -123,7 +122,7 @@ class Page_Camera(QWidget):
 
         self.label_17 = QLabel(self.fm_buttons_sca)
         self.label_17.setObjectName(u"label_17")
-        self.label_17.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_17.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_17, 5, 0, 1, 1)
 
@@ -134,19 +133,19 @@ class Page_Camera(QWidget):
 
         self.label_18 = QLabel(self.fm_buttons_sca)
         self.label_18.setObjectName(u"label_18")
-        self.label_18.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_18.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_18, 7, 0, 1, 1)
 
         self.label_20 = QLabel(self.fm_buttons_sca)
         self.label_20.setObjectName(u"label_20")
-        self.label_20.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_20.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_20, 10, 0, 1, 1)
 
         self.label_23 = QLabel(self.fm_buttons_sca)
         self.label_23.setObjectName(u"label_23")
-        self.label_23.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_23.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.LayoutG_fm_buttons_sca.addWidget(self.label_23, 12, 0, 1, 1)
 
@@ -190,7 +189,6 @@ class Page_Camera(QWidget):
 
         self.LayoutG_fm_buttons_sca.addWidget(self.cb_triggerMode, 9, 1, 1, 1)
 
-
         self.LayoutV_fm_buttons_sca.addLayout(self.LayoutG_fm_buttons_sca)
 
         self.verticalSpacer_2 = QSpacerItem(20, 147, QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -202,9 +200,7 @@ class Page_Camera(QWidget):
 
         self.LayoutV_fm_buttons_sca.addWidget(self.pb_sca_configuration)
 
-
         self.LayoutH_fm_settings_camera.addWidget(self.fm_buttons_sca)
-
 
         self.LayoutV_Principal.addWidget(self.fm_settings_camera)
 
@@ -249,7 +245,6 @@ class Page_Camera(QWidget):
                                                 "font: 12pt \"Microsoft Sans Serif\";")
 
         self.LayoutV_Principal.addWidget(self.fm_init_camera)
-
 
     def Names_Page(self):
 

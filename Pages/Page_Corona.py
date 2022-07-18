@@ -53,19 +53,19 @@ class Page_Corona(QWidget):
         self.gridLayout.setObjectName(u"gridLayout")
         self.label_11 = QLabel(self.fm_buttons_sc)
         self.label_11.setObjectName(u"label_11")
-        self.label_11.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_11.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_11, 6, 0, 1, 1)
 
         self.label_5 = QLabel(self.fm_buttons_sc)
         self.label_5.setObjectName(u"label_5")
-        self.label_5.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_5.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_5, 1, 0, 1, 1)
 
         self.label_2 = QLabel(self.fm_buttons_sc)
         self.label_2.setObjectName(u"label_2")
-        self.label_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_2.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
 
@@ -81,19 +81,19 @@ class Page_Corona(QWidget):
 
         self.label_4 = QLabel(self.fm_buttons_sc)
         self.label_4.setObjectName(u"label_4")
-        self.label_4.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_4.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_4, 2, 0, 1, 1)
 
         self.label_8 = QLabel(self.fm_buttons_sc)
         self.label_8.setObjectName(u"label_8")
-        self.label_8.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_8.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_8, 3, 0, 1, 1)
 
         self.label_9 = QLabel(self.fm_buttons_sc)
         self.label_9.setObjectName(u"label_9")
-        self.label_9.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_9.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_9, 4, 0, 1, 1)
 
@@ -119,7 +119,7 @@ class Page_Corona(QWidget):
 
         self.label_10 = QLabel(self.fm_buttons_sc)
         self.label_10.setObjectName(u"label_10")
-        self.label_10.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_10.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
         self.gridLayout.addWidget(self.label_10, 5, 0, 1, 1)
 
@@ -127,7 +127,6 @@ class Page_Corona(QWidget):
         self.lb_sc_port.setObjectName(u"lb_sc_port")
 
         self.gridLayout.addWidget(self.lb_sc_port, 0, 1, 1, 1)
-
 
         self.verticalLayout_5.addLayout(self.gridLayout)
 
@@ -149,7 +148,6 @@ class Page_Corona(QWidget):
         self.pb_sc_configuration.setObjectName(u"pb_sc_configuration")
 
         self.verticalLayout_5.addWidget(self.pb_sc_configuration)
-
 
         self.horizontalLayout_24.addWidget(self.fm_buttons_sc)
         self.fm_leds = QFrame(self.fm_settings_corona)
@@ -287,7 +285,7 @@ class Page_Corona(QWidget):
         self.Wavelengths = ['410', '450', '470', '490', '505', '530', '560', '590', '600',
                             '620', '630', '650', '720', '840', '960']
 
-        for i,wav in enumerate(self.Wavelengths):
+        for i, wav in enumerate(self.Wavelengths):
             self.cb_led[i].setText(wav + ' nm')
             self.lb_PWM_led[i].setText(wav + ' nm')
 
@@ -302,7 +300,6 @@ class Page_Corona(QWidget):
 
     def Control_Buttons(self):
 
-        #self.pb_init_corona.clicked.connect(self.control_pb_init_corona)
         self.pb_sc_leds.clicked.connect(self.Control_pb_sc_leds)
         self.pb_sc_PWMleds.clicked.connect(self.Control_pb_sc_PWMleds)
         self.pb_init_corona.clicked.connect(self.Control_pb_init_corona)
@@ -325,7 +322,6 @@ class Page_Corona(QWidget):
 
         self.App.Core_App.Construct_Iluminator(puerto)
 
-
         if self.App.Core_App.iluminator_init:
 
             Iluminator = self.App.Core_App.Iluminator_MultiSpectral
@@ -343,8 +339,6 @@ class Page_Corona(QWidget):
                 self.le_shotMode.setText(str(Iluminator.get_shot_mode()))
                 self.le_timeFlash.setText(str(Iluminator.get_shot_time_flash()))
 
-        #Adquisition Multispectral Interfaz Leds Ilumination
-
                 self.fm_init_corona.hide()
                 self.fm_settings_corona.show()
                 self.lb_init_c_error.setText("")
@@ -352,7 +346,6 @@ class Page_Corona(QWidget):
             else:
                 self.App.Core_App.iluminator_init = False
                 print('Estado de comunicación desconectado')
-
 
     def fm_PWM_led_hs(self):
 
