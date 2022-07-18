@@ -4,3 +4,10 @@ corona = Virtual_Iluminator_MultiSpectral('c',)
 
 
 corona.get_shot_time_trigger()
+
+
+if True:
+
+	pass
+
+print('Completado')

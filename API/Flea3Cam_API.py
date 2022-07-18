@@ -1,5 +1,6 @@
 import PySpin as Ps
 
+
 class Camera_PySpin():
 
     """docstring for Camera_PySpin"""
@@ -121,7 +122,7 @@ class Camera_PySpin():
                 for feature in features:
                     node_feature = Ps.CValuePtr(feature)
                     self.__device_info.append([node_feature.GetName(),
-                        node_feature.ToString() if Ps.IsReadable(node_feature) else 'Node not readable'])
+                                               node_feature.ToString() if Ps.IsReadable(node_feature) else 'Node not readable'])
 
             else:
 
