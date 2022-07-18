@@ -2,6 +2,7 @@ from API.VirtualComunication import *
 import serial
 import time
 
+
 class Iluminator_MultiSpectral:
     """docstring for Iluminator_MultiSppectral"""
 
@@ -48,7 +49,7 @@ class Iluminator_MultiSpectral:
             return 1
 
         else:
-            
+
             self.__shot_mode = message[1]
             self.__shot_time_trigger = message[2:4]
             self.__shot_time_flash = message[4:7]
@@ -109,8 +110,7 @@ class Iluminator_MultiSpectral:
             print("Valor incorrecto se debe ingresar 2 digitos para un valor correcto de tiempo")
             return 1
 
-
-    def set_shot_time_flash(self,value):
+    def set_shot_time_flash(self, value):
 
         try:
 
@@ -196,7 +196,7 @@ class Iluminator_MultiSpectral:
 
         self.__timeshot = timeshot
 
-    def set_leds(self,leds):
+    def set_leds(self, leds):
         self.__leds = leds
 
     #########################

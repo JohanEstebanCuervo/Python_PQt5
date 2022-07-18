@@ -2,8 +2,11 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+
 class Barra_Principal(QFrame):
+
     """docstring for Barra_Principal"""
+
     def __init__(self, App):
         super(Barra_Principal, self).__init__(App)
         self.App = App
@@ -15,7 +18,6 @@ class Barra_Principal(QFrame):
         self.mouseMoveEvent = self.mover_ventana
 
         self.Control_Buttons()
-
 
     def Structe_Barra(self):
         self.setObjectName(u"Barra_Principal")
@@ -146,7 +148,6 @@ class Barra_Principal(QFrame):
         self.pb_exit.clicked.connect(self.exit_app)
         self.pb_normal.hide()
 
-
     def mousePressEvent(self, event):
 
         self.clickPosition = event.globalPos()
@@ -180,7 +181,7 @@ class Barra_Principal(QFrame):
         self.App.showMaximized()
         self.pb_maximum.hide()
         self.pb_normal.show()
-    
+
     def exit_app(self):
 
         #if self.camera_init:

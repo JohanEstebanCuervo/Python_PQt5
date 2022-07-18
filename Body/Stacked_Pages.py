@@ -6,13 +6,13 @@ from Pages.Page_Capture import *
 from Pages.Page_Camera import *
 from Pages.Page_Corona import *
 
+
 class Stacked_Pages(QStackedWidget):
 
-    def __init__(self,App):
+    def __init__(self, App):
         super(Stacked_Pages, self).__init__(App)
         self.App = App
         self.setObjectName(u"Stacked_Pages")
-
 
         self.page_capture = Page_Capture(App)
         self.addWidget(self.page_capture)
@@ -23,7 +23,4 @@ class Stacked_Pages(QStackedWidget):
         self.page_corona = Page_Corona(App)
         self.addWidget(self.page_corona)
 
-
-
         self.setCurrentIndex(0)
-

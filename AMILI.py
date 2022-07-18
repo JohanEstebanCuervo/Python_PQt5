@@ -28,6 +28,7 @@ class AMILI_App(QtWidgets.QMainWindow):
         super().__init__()
         if not self.objectName():
             self.setObjectName(u"MainWindow")
+            
         self.resize(1000, 721)
         self.setStyleSheet(u"QPushButton{\n"
                            "border:0px\n"

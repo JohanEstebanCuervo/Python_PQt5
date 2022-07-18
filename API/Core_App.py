@@ -11,8 +11,10 @@ import subprocess
 
 
 class Core_App:
+
     """docstring for Core_App"""
-    def __init__(self,App):
+
+    def __init__(self, App):
         self.App = App
 
         # carpeta temporal
@@ -44,7 +46,7 @@ class Core_App:
                 self.fm_init_corona.show()
                 self.fm_settings_corona.hide()
 
-    def Update_list_ports(self,Update_cb_listPort=False):
+    def Update_list_ports(self, Update_cb_listPort=False):
         self.list_ports = Fun_Ad.Serial_Port_Select(terminal=False)
         self.list_ports.append('VirtualIluminator')
 
@@ -57,8 +59,7 @@ class Core_App:
             elif len(self.list_ports) == 1:
                 self.App.Stacked_Pages.page_corona.cb_listPort.addItem(list_ports[0])
 
-
-    def Construct_Iluminator(self,puerto):
+    def Construct_Iluminator(self, puerto):
 
         if puerto == 'VirtualIluminator':
 
@@ -72,7 +73,6 @@ class Core_App:
             if Iluminator == 'No device identify':
 
                 self.App.Stacked_Pages.page_corona.lb_init_c_error.setText("Error al iniciar el Iluminador")
-
 
             if Iluminator == 'MultiSpectralCrown':
 
