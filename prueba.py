@@ -1,13 +1,12 @@
-from API.Virtual_Iluminator_MultiSpectral import *
+from API.VirtualCam import *
 
-corona = Virtual_Iluminator_MultiSpectral('c',)
+corona = VirtualCam()
 
-
-corona.get_shot_time_trigger()
+corona.Acquire_Image('Imagenes/prueba.jpg')
 
 
 if True:
 
-	pass
+    pass
 
 print('Completado')

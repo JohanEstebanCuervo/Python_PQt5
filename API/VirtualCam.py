@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import cv2
 
+
 class VirtualCam:
 
-    def __init__(self, pyspin_camlis, Gamma=1.25, ExposureTime=8000, Gain=0,
+    def __init__(self, Gamma=1.25, ExposureTime=8000, Gain=0,
                  Sharpness=1800, BlackLevel=0.7, BufferMode='Continuous',
                  BufferHandlingMode='NewestOnly', TriggerSource='Line2',
                  BufferCount=3):
@@ -70,6 +71,7 @@ class VirtualCam:
         else:
 
             self.__init_complete = True
+            print('Camara Iniciada Correctamente')
 
     def __init_atributes(self):
         self.__gamma = None
@@ -87,6 +89,10 @@ class VirtualCam:
         self.__buffer_count = None
         self.__buffer_handling_mode = None
         self.__trigger_source = None
+        self.imagenes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
+                         'B', 'C', 'D', 'E', 'F']
+
+        self.iterador = 0
 
     ##################################
     # Device info
@@ -247,13 +253,19 @@ class VirtualCam:
 
     def Acquire_Image(self, nombre):
 
-        pass  # Agregar Funcionalidad para copiar una imagen
+        imagen = cv2.cvtColor(cv2.imread('API/Imag_VirtualCam/' + self.imagenes[self.iterador] + '.bmp'), cv2.COLOR_BGR2GRAY)
+
+        cv2.imwrite(nombre, imagen)
+
+        self.iterador += 1
 
     def Init_Acquisition(self):
 
         pass
 
     def End_Acquisition(self):
+
+        self.iterador = 0
 
         pass
 
