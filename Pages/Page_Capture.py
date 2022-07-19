@@ -40,7 +40,7 @@ class Viewer(QGraphicsView):
 
     def setPhoto(self, pixmap=None):
         self._zoom = 0
-        print(pixmap.isNull())
+
         if pixmap and not pixmap.isNull():
             self._empty = False
             self.setDragMode(QGraphicsView.ScrollHandDrag)
@@ -139,20 +139,6 @@ class Page_Capture(QWidget):
 
         self.LayoutH_fm_control_capture.addWidget(self.pb_capture)
 
-        self.pb_next_capture = QPushButton(self.fm_control_capture)
-        self.pb_next_capture.setObjectName(u"pb_next_capture")
-        self.pb_next_capture.setMinimumSize(QSize(30, 30))
-        self.pb_next_capture.setMaximumSize(QSize(30, 30))
-        self.pb_next_capture.setStyleSheet(u"QPushButton:hover{\n"
-                                            "background-color: rgb(255, 255, 0);\n"
-                                            "}")
-        icon5 = QIcon()
-        icon5.addFile(u"iconos/after.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.pb_next_capture.setIcon(icon5)
-        self.pb_next_capture.setIconSize(QSize(25, 25))
-
-        self.LayoutH_fm_control_capture.addWidget(self.pb_next_capture)
-
         self.pb_after_capture = QPushButton(self.fm_control_capture)
         self.pb_after_capture.setObjectName(u"pb_after_capture")
         self.pb_after_capture.setMinimumSize(QSize(30, 30))
@@ -161,11 +147,25 @@ class Page_Capture(QWidget):
                                              "background-color: rgb(255, 255, 0);\n"
                                              "}")
         icon6 = QIcon()
-        icon6.addFile(u"iconos/next.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon6.addFile(u"iconos/after.png", QSize(), QIcon.Normal, QIcon.Off)
         self.pb_after_capture.setIcon(icon6)
         self.pb_after_capture.setIconSize(QSize(25, 25))
 
         self.LayoutH_fm_control_capture.addWidget(self.pb_after_capture)
+
+        self.pb_next_capture = QPushButton(self.fm_control_capture)
+        self.pb_next_capture.setObjectName(u"pb_next_capture")
+        self.pb_next_capture.setMinimumSize(QSize(30, 30))
+        self.pb_next_capture.setMaximumSize(QSize(30, 30))
+        self.pb_next_capture.setStyleSheet(u"QPushButton:hover{\n"
+                                            "background-color: rgb(255, 255, 0);\n"
+                                            "}")
+        icon5 = QIcon()
+        icon5.addFile(u"iconos/next.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.pb_next_capture.setIcon(icon5)
+        self.pb_next_capture.setIconSize(QSize(25, 25))
+
+        self.LayoutH_fm_control_capture.addWidget(self.pb_next_capture)
 
         self.pb_save_capture = QPushButton(self.fm_control_capture)
         self.pb_save_capture.setObjectName(u"pb_save_capture")
@@ -252,6 +252,8 @@ class Page_Capture(QWidget):
     def Control_Buttons(self):
 
         self.pb_capture.clicked.connect(self.Control_pb_capture)
+        self.pb_next_capture.clicked.connect(self.Control_pb_next_capture)
+        self.pb_after_capture.clicked.connect(self.Control_pb_after_capture)
 
     def Control_pb_capture(self):
 
@@ -278,9 +280,9 @@ class Page_Capture(QWidget):
 
             Camera.End_Acquisition()
 
-            self.Charge_Images()
+            self.Charge_Images(0)
 
-    def Charge_Images(self):
+    def Charge_Images(self,index_prin):
         Iluminator = self.App.Core_App.Iluminator_MultiSpectral
 
         Imagenes = self.App.Core_App.Patch_Acquisition.entryInfoList(["*.bmp"],
@@ -288,7 +290,7 @@ class Page_Capture(QWidget):
 
         self.imagenesCarpeta = [imagen.absoluteFilePath() for imagen in Imagenes]
 
-        self.index_PImag = 9
+        self.index_PImag = index_prin
         imagen_prin = QPixmap(self.imagenesCarpeta[self.index_PImag])
         index = Iluminator.leds[Iluminator.get_leds()[self.index_PImag]]
         self.lb_wavelenth_capture.setText(Iluminator.Wavelengths[index] + ' nm')
@@ -321,3 +323,17 @@ class Page_Capture(QWidget):
             imagen = QPixmap(nombreimagen)
             imagen = imagen.scaled(rect.height(), rect.width(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.lb_list_imag[i].setPixmap(imagen)
+
+    def Control_pb_next_capture(self):
+
+        index = self.index_PImag + 1
+
+        if index < len(self.imagenesCarpeta):
+            self.Charge_Images(index)
+
+    def Control_pb_after_capture(self):
+
+        index = self.index_PImag - 1
+
+        if index >= 0:
+            self.Charge_Images(index)

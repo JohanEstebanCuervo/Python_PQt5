@@ -86,7 +86,7 @@ class Menu(QFrame):
 
         self.pb_menu_capture.setText("Capture")
         self.pb_menu_camera.setText("Settings Camera")
-        self.pb_menu_corona.setText("Settings Corona")
+        self.pb_menu_corona.setText("Settings iluminator")
         self.pb_menu_colorReproduction.setText("Color Reproduction")
         self.pb_menu_settings.setText("Settings")
 
