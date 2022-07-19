@@ -13,7 +13,9 @@ class Page_Camera(QWidget):
 
         self.Names_Page()
 
-        self.fm_init_camera.hide()
+        self.Control_Buttons()
+
+        self.fm_settings_camera.hide()
 
     def Structure_Page(self):
         self.setObjectName(u"Page_Camera")
@@ -272,3 +274,57 @@ class Page_Camera(QWidget):
         self.lb_init_camera_2.setText('Inicializar Camara')
         self.pb_init_camera.setText('Iniciar')
         self.lb_init_camera_error.setText("")
+
+    ##############################
+        # Control Buttons
+        ##############################
+
+    def Control_Buttons(self):
+
+        self.pb_init_camera.clicked.connect(self.Control_pb_init_camera)
+
+    def Control_pb_init_camera(self):
+
+        Camera = self.cb_listCameras.currentText()
+        self.App.Core_App.Construct_Camera(Camera)
+
+        if self.App.Core_App.camera_init:
+
+            camera = self.App.Core_App.Camera
+
+            if self.App.Core_App.camera_init:
+
+                self.lb_sca_camera.setText(Camera)
+
+                self.le_blackLevel.setText(str(camera.get_blacklevel()))
+
+                self.le_gamma.setText(str(camera.get_gamma()))
+
+                self.le_gain.setText(str(camera.get_gain()))
+
+                self.le_sharpness.setText(str(camera.get_sharpness()))
+
+                self.le_exposure.setText(str(camera.get_exposure()))
+
+                self.le_bufferMode.setText(str(camera.get_buffer_mode()))
+
+                self.le_bufferCount.setText(str(camera.get_buffer_count()))
+
+                self.le_bufferHandlingMode.setText(str(camera.get_buffer_handling_mode()))
+
+                self.cb_gainAuto.setChecked(camera.get_gain_auto())
+
+                self.cb_sharpnessAuto.setChecked(camera.get_sharpness_auto())
+
+                self.cb_exposureAuto.setChecked(camera.get_exposure_auto())
+
+                self.cb_triggerMode.setChecked(camera.get_trigger_mode())
+
+                self.fm_init_camera.hide()
+                self.fm_settings_camera.show()
+                self.camera_init = True
+                self.lb_init_camera_error.setText("")
+
+            else:
+
+                self.lb_init_camera_error.setText("No se ha podido iniciar la camara")

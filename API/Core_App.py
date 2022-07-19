@@ -2,6 +2,7 @@ from API.Flea3Cam_API import *
 from API.MultiespectralCrown import *
 from API.Virtual_Iluminator_MultiSpectral import *
 from API.ColorReproduction_API import *
+from API.VirtualCam import *
 
 import methods.Funciones_Adquisicion as Fun_Ad
 
@@ -27,12 +28,12 @@ class Core_App:
         self.timer.timeout.connect(self.Check_Conection)
         self.timer.start(2000)
         self.iluminator_init = False
+        self.camera_init = False
 
     def Check_Conection(self):
-        self.Update_list_ports()
 
         if self.iluminator_init:
-
+            self.Update_list_ports()
             bandera = 0
             for port in self.list_ports:
                 if(port == self.App.Stacked_Pages.page_corona.lb_sc_port.text()):
@@ -41,8 +42,23 @@ class Core_App:
 
             if bandera == 0:
                 self.iluminator_init = False
-                self.pb_error_conection_corona.setStyleSheet("background-color : red; border-radius: 10px")
-                self.lb_error_conection_corona.setText("Corona desconectada")
+                self.App.Barra_Principal.pb_error_conection_corona.setStyleSheet("background-color : red; border-radius: 10px")
+                self.App.Barra_Principal.lb_error_conection_corona.setText("Corona desconectada")
+                self.fm_init_corona.show()
+                self.fm_settings_corona.hide()
+
+        if self.camera_init:
+            # self.Update_list_cameras() optimizar ya que es muy lento
+            bandera = 0
+            for cam in self.list_cameras:
+                if(cam == self.App.Stacked_Pages.page_camera.lb_sca_camera.text()):
+                    bandera = 1
+                    break
+
+            if bandera == 0:
+                self.camera_init = False
+                self.App.Barra_Principal.pb_error_conection_camera.setStyleSheet("background-color : red; border-radius: 10px")
+                self.App.Barra_Principal.lb_error_conection_camera.setText("Camara desconectada")
                 self.fm_init_corona.show()
                 self.fm_settings_corona.hide()
 
@@ -58,6 +74,25 @@ class Core_App:
 
             elif len(self.list_ports) == 1:
                 self.App.Stacked_Pages.page_corona.cb_listPort.addItem(list_ports[0])
+
+    def Update_list_cameras(self, Update_cb_listCameras=False):
+        self.list_cameras = Fun_Ad.Cameras_List()
+        if self.list_cameras:
+
+            self.list_cameras = ['VirtualCamera']
+        else:
+
+            self.list_cameras.append('VirtualCamera')
+
+        if Update_cb_listCameras:
+            ComBox_cameras = self.App.Stacked_Pages.page_camera.cb_listCameras
+
+            ComBox_cameras.clear()
+            if len(self.list_cameras) > 1:
+                ComBox_cameras.addItems(self.list_cameras)
+
+            elif len(self.list_cameras) == 1:
+                ComBox_cameras.addItem(self.list_cameras[0])
 
     def Construct_Iluminator(self, puerto):
 
@@ -82,3 +117,20 @@ class Core_App:
             if Iluminator == 'Iluminator_MultiSpectral':
                 # Implementación futura iluminador de victor
                 pass
+
+        self.App.Barra_Principal.pb_error_conection_corona.setStyleSheet("background-color : green; border-radius: 10px")
+        self.App.Barra_Principal.lb_error_conection_corona.setText("")
+
+    def Construct_Camera(self, camera):
+
+        if camera == 'VirtualCamera':
+
+            self.Camera = VirtualCam()
+            self.camera_init = True
+
+        else:
+
+            pass  # Implementación para spinakker cam
+
+        self.App.Barra_Principal.pb_error_conection_camera.setStyleSheet("background-color : green; border-radius: 10px")
+        self.App.Barra_Principal.lb_error_conection_camera.setText("")
