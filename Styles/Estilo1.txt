@@ -1,0 +1,13 @@
+QFrame{
+background-color: rgb(161, 187, 215);
+}
+
+QPushButton{
+border:1px solid #000000;
+background-color: rgb(161, 187, 215);
+font: 75 12pt "Arial Narrow";	
+}
+
+QPushButton:hover{
+background-color: white;
+}

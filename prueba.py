@@ -1,12 +1,8 @@
-from API.VirtualCam import *
 
-corona = VirtualCam()
+vect = ['casa', 'perro', 'gato']
+dict = {}
+for i, valor in enumerate(vect):
 
-corona.Acquire_Image('Imagenes/prueba.jpg')
+    dict[valor] = i
 
-
-if True:
-
-    pass
-
-print('Completado')
+print(dict)

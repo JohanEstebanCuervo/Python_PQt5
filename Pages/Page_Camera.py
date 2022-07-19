@@ -2,6 +2,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+style = open('Styles/Estilo1.txt', 'r').read()
+
 
 class Page_Camera(QWidget):
 
@@ -19,6 +21,7 @@ class Page_Camera(QWidget):
 
     def Structure_Page(self):
         self.setObjectName(u"Page_Camera")
+        self.setStyleSheet(style)
         self.LayoutV_Principal = QVBoxLayout(self)
         self.LayoutV_Principal.setObjectName(u"LayoutV_Principal")
         self.lb_title_page_sca = QLabel(self)

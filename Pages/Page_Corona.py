@@ -2,6 +2,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+style = open('Styles/Estilo1.txt', 'r').read()
+
 
 class Page_Corona(QWidget):
 
@@ -22,6 +24,7 @@ class Page_Corona(QWidget):
     def Structure_Page(self):
 
         self.setObjectName(u"Page_Corona")
+        self.setStyleSheet(style)
         self.verticalLayout_7 = QVBoxLayout(self)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.lb_title_page_sco = QLabel(self)
@@ -327,9 +330,8 @@ class Page_Corona(QWidget):
             Iluminator = self.App.Core_App.Iluminator_MultiSpectral
             if Iluminator.get_comunication_state():
 
-                #self.cb_buttons_checked("U")
-
-                #self.le_PWM_led_checked("U")
+                self.cb_leds_checked_init()
+                self.le_PWM_led_setText_init()
 
                 self.lb_sc_port.setText(puerto)
                 self.le_timeSleepc.setText(str(Iluminator.get_time_sleepc()))
@@ -355,3 +357,32 @@ class Page_Corona(QWidget):
                 self.fm_PWM_led[i].show()
             else:
                 self.fm_PWM_led[i].hide()
+
+    def cb_leds_checked_init(self):
+        Iluminator = self.App.Core_App.Iluminator_MultiSpectral
+
+        for led in Iluminator.get_leds():
+
+            index = Iluminator.leds[led]
+            self.cb_led[index].setChecked(True)
+
+    def cb_leds_is_checked(self):
+        Iluminator = self.App.Core_App.Iluminator_MultiSpectral
+
+        lista_leds = []
+
+        for i, checkBox in enumerate(self.cb_led):
+
+            if checkBox.isChecked():
+                name = list(Iluminator.leds.keys())[i]
+                lista_leds.append(name)
+
+        return lista_leds
+
+    def le_PWM_led_setText_init(self):
+
+        Iluminator = self.App.Core_App.Iluminator_MultiSpectral
+
+        for i, pwm_led in enumerate(Iluminator.get_PWM_leds()):
+
+            self.le_PWM_led[i].setText(pwm_led[2:5])

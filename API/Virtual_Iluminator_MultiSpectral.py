@@ -12,19 +12,26 @@ class Virtual_Iluminator_MultiSpectral(Iluminator_MultiSpectral):
                 'M0BN', 'M0CN', 'M0DN', 'M0EN', 'M0FN']
 
         self.set_leds(leds)
-        self.__timeshot = timeshot
+        self.set_timeshot(timeshot)
         self.set_shot_message('W')
 
-        pwm_leds = ["J1090K", "J2090K", "J3090K", "J4090K", "J5090K",
-                    "J6090K", "J7090K", "J8090K", "J9090K", "JA090K",
-                    "JB090K", "JC090K", "JD080K", "JE010K", "JF010K"]
+        self.pwm_leds = ["J1090K", "J2090K", "J3090K", "J4090K", "J5090K",
+                         "J6090K", "J7090K", "J8090K", "J9090K", "JA090K",
+                         "JB090K", "JC090K", "JD080K", "JE010K", "JF010K"]
 
-        self.set_PWM_Leds(pwm_leds)
+        self.set_PWM_Leds(self.pwm_leds)
         self.set_shot_leds(3)
 
-        self.Wavelengths = ['410', '450', '470', '490', '505', '530', '560', '590', '600',
-                            '620', '630', '650', '720', '840', '960']
+        self.Wavelengths = ['410', '450', '470', '490', '505',
+                            '530', '560', '590', '600', '620',
+                            '630', '650', '720', '840', '960']
 
+        self.Dicts(leds)
 
         print('Iluminador iniciado correctamente')
 
+    def Dicts(self, leds):
+
+        self.leds = {}
+        for i, led in enumerate(leds):
+            self.leds[led] = i
