@@ -54,23 +54,23 @@ class Page_Corona(QWidget):
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
-        self.label_11 = QLabel(self.fm_buttons_sc)
-        self.label_11.setObjectName(u"label_11")
-        self.label_11.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
+        self.lb_time_out = QLabel(self.fm_buttons_sc)
+        self.lb_time_out.setObjectName(u"lb_time_out")
+        self.lb_time_out.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
-        self.gridLayout.addWidget(self.label_11, 6, 0, 1, 1)
+        self.gridLayout.addWidget(self.lb_time_out, 6, 0, 1, 1)
 
-        self.label_5 = QLabel(self.fm_buttons_sc)
-        self.label_5.setObjectName(u"label_5")
-        self.label_5.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
+        self.lb_time_sleep = QLabel(self.fm_buttons_sc)
+        self.lb_time_sleep.setObjectName(u"lb_time_sleep")
+        self.lb_time_sleep.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
-        self.gridLayout.addWidget(self.label_5, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.lb_time_sleep, 1, 0, 1, 1)
 
-        self.label_2 = QLabel(self.fm_buttons_sc)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
+        self.lb_serial_port = QLabel(self.fm_buttons_sc)
+        self.lb_serial_port.setObjectName(u"lb_serial_port")
+        self.lb_serial_port.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
-        self.gridLayout.addWidget(self.label_2, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.lb_serial_port, 0, 0, 1, 1)
 
         self.le_shotMessage = QLineEdit(self.fm_buttons_sc)
         self.le_shotMessage.setObjectName(u"le_shotMessage")
@@ -82,23 +82,23 @@ class Page_Corona(QWidget):
 
         self.gridLayout.addWidget(self.le_timeSleepc, 1, 1, 1, 1)
 
-        self.label_4 = QLabel(self.fm_buttons_sc)
-        self.label_4.setObjectName(u"label_4")
-        self.label_4.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
+        self.lb_shot_message = QLabel(self.fm_buttons_sc)
+        self.lb_shot_message.setObjectName(u"lb_shot_message")
+        self.lb_shot_message.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
-        self.gridLayout.addWidget(self.label_4, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.lb_shot_message, 2, 0, 1, 1)
 
-        self.label_8 = QLabel(self.fm_buttons_sc)
-        self.label_8.setObjectName(u"label_8")
-        self.label_8.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
+        self.lb_time_trigger = QLabel(self.fm_buttons_sc)
+        self.lb_time_trigger.setObjectName(u"lb_time_trigger")
+        self.lb_time_trigger.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
-        self.gridLayout.addWidget(self.label_8, 3, 0, 1, 1)
+        self.gridLayout.addWidget(self.lb_time_trigger, 3, 0, 1, 1)
 
-        self.label_9 = QLabel(self.fm_buttons_sc)
-        self.label_9.setObjectName(u"label_9")
-        self.label_9.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
+        self.lb_shot_mode = QLabel(self.fm_buttons_sc)
+        self.lb_shot_mode.setObjectName(u"lb_shot_mode")
+        self.lb_shot_mode.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
-        self.gridLayout.addWidget(self.label_9, 4, 0, 1, 1)
+        self.gridLayout.addWidget(self.lb_shot_mode, 4, 0, 1, 1)
 
         self.le_shotMode = QLineEdit(self.fm_buttons_sc)
         self.le_shotMode.setObjectName(u"le_shotMode")
@@ -120,11 +120,11 @@ class Page_Corona(QWidget):
 
         self.gridLayout.addWidget(self.le_timeOut, 6, 1, 1, 1)
 
-        self.label_10 = QLabel(self.fm_buttons_sc)
-        self.label_10.setObjectName(u"label_10")
-        self.label_10.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
+        self.lb_time_flash = QLabel(self.fm_buttons_sc)
+        self.lb_time_flash.setObjectName(u"lb_time_flash")
+        self.lb_time_flash.setAlignment(Qt.AlignRight | Qt.AlignTrailing | Qt.AlignVCenter)
 
-        self.gridLayout.addWidget(self.label_10, 5, 0, 1, 1)
+        self.gridLayout.addWidget(self.lb_time_flash, 5, 0, 1, 1)
 
         self.lb_sc_port = QLabel(self.fm_buttons_sc)
         self.lb_sc_port.setObjectName(u"lb_sc_port")
@@ -174,6 +174,8 @@ class Page_Corona(QWidget):
             self.cb_led[i].setObjectName(str("cb_led_" + str(i + 1)))
             self.LayoutV_fm_leds.addWidget(self.cb_led[i])
 
+            self.cb_led[i].hide()
+
         self.space_leds = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.LayoutV_fm_leds.addItem(self.space_leds)
@@ -219,6 +221,8 @@ class Page_Corona(QWidget):
             self.fm_PWM_LayoutH_led[i].addWidget(self.le_PWM_led[i])
 
             self.LayoutV_fm_PWM.addWidget(self.fm_PWM_led[i])
+
+            self.fm_PWM_led[i].hide()
 
         self.PWM_spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -273,25 +277,17 @@ class Page_Corona(QWidget):
     def Names_Page(self):
 
         self.lb_title_page_sco.setText('Settings Corona')
-        self.label_11.setText('time_out')
-        self.label_5.setText('time sleep')
-        self.label_2.setText('Puerto Serial')
-        self.label_4.setText('Mensaje de disparo')
-        self.label_8.setText('time trigger')
-        self.label_9.setText('shot mode')
-        self.label_10.setText('time flash')
+        self.lb_time_out.setText('time out')
+        self.lb_time_sleep.setText('time sleep')
+        self.lb_serial_port.setText('Puerto Serial')
+        self.lb_shot_message.setText('Mensaje de disparo')
+        self.lb_time_trigger.setText('time trigger')
+        self.lb_shot_mode.setText('shot mode')
+        self.lb_time_flash.setText('time flash')
         self.lb_sc_port.setText("")
         self.pb_sc_leds.setText("Leds")
         self.pb_sc_PWMleds.setText("PWM Leds")
         self.pb_sc_configuration.setText("Configuar")
-
-        self.Wavelengths = ['410', '450', '470', '490', '505', '530', '560', '590', '600',
-                            '620', '630', '650', '720', '840', '960']
-
-        for i, wav in enumerate(self.Wavelengths):
-            self.cb_led[i].setText(wav + ' nm')
-            self.lb_PWM_led[i].setText(wav + ' nm')
-
         self.lb_init_corona_2.setText("Puerto Serial")
         self.lb_init_corona_1.setText("Inicializar Corona")
         self.pb_init_corona.setText("Iniciar")
@@ -341,6 +337,8 @@ class Page_Corona(QWidget):
                 self.le_shotMode.setText(str(Iluminator.get_shot_mode()))
                 self.le_timeFlash.setText(str(Iluminator.get_shot_time_flash()))
 
+                self.Rename_cblb_leds(Iluminator.Wavelengths)
+
                 self.fm_init_corona.hide()
                 self.fm_settings_corona.show()
                 self.lb_init_c_error.setText("")
@@ -386,3 +384,11 @@ class Page_Corona(QWidget):
         for i, pwm_led in enumerate(Iluminator.get_PWM_leds()):
 
             self.le_PWM_led[i].setText(pwm_led[2:5])
+
+    def Rename_cblb_leds(self, Wavelengths):
+
+        for i, wav in enumerate(Wavelengths):
+            self.cb_led[i].setText(wav + ' nm')
+            self.lb_PWM_led[i].setText(wav + ' nm')
+            self.cb_led[i].show()
+            self.fm_PWM_led[i].show()

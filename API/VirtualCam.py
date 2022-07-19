@@ -255,6 +255,8 @@ class VirtualCam:
 
         imagen = cv2.cvtColor(cv2.imread('API/Imag_VirtualCam/' + self.imagenes[self.iterador] + '.bmp'), cv2.COLOR_BGR2GRAY)
 
+        nombre = 'temp/' + nombre + '.bmp'
+        
         cv2.imwrite(nombre, imagen)
 
         self.iterador += 1

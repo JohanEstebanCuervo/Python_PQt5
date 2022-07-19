@@ -2,6 +2,79 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+class Viewer(QGraphicsView):
+    photoClicked = pyqtSignal(QPoint)
+
+    def __init__(self, App):
+        super(Viewer, self).__init__(App)
+        self.App = App
+        self._zoom = 0
+        self._empty = True
+        self._scene = QGraphicsScene(self)
+        self._photo = QGraphicsPixmapItem()
+        self._scene.addItem(self._photo)
+        self.setScene(self._scene)
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setBackgroundBrush(QBrush(QColor(161, 187, 215)))
+        self.setFrameShape(QFrame.NoFrame)
+
+    def hasPhoto(self):
+        return not self._empty
+
+    def fitInView(self, scale=True):
+        rect = QRectF(self._photo.pixmap().rect())
+        if not rect.isNull():
+            self.setSceneRect(rect)
+            if self.hasPhoto():
+                unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
+                self.scale(1 / unity.width(), 1 / unity.height())
+                viewrect = self.viewport().rect()
+                scenerect = self.transform().mapRect(rect)
+                factor = min(viewrect.width() / scenerect.width(),
+                             viewrect.height() / scenerect.height())
+                self.scale(factor, factor)
+            self._zoom = 0
+
+    def setPhoto(self, pixmap=None):
+        self._zoom = 0
+        print(pixmap.isNull())
+        if pixmap and not pixmap.isNull():
+            self._empty = False
+            self.setDragMode(QGraphicsView.ScrollHandDrag)
+            self._photo.setPixmap(pixmap)
+        else:
+            self._empty = True
+            self.setDragMode(QGraphicsView.NoDrag)
+            self._photo.setPixmap(QPixmap())
+        #self.fitInView()
+
+    def wheelEvent(self, event):
+        if self.hasPhoto():
+            factor = 1.25
+            if event.angleDelta().y() > 0:
+                factor = 1.25
+                self._zoom += 1
+            else:
+                factor = 1 / factor
+                self._zoom -= 1
+            if self._zoom >= 0:
+                self.scale(factor, factor)
+            else:
+                self._zoom = 0
+
+    def toggleDragMode(self):
+        if self.dragMode() == QGraphicsView.ScrollHandDrag:
+            self.setDragMode(QGraphicsView.NoDrag)
+        elif not self._photo.pixmap().isNull():
+            self.setDragMode(QGraphicsView.ScrollHandDrag)
+
+    def mousePressEvent(self, event):
+        if self._photo.isUnderMouse():
+            self.photoClicked.emit(self.mapToScene(event.pos()).toPoint())
+        super(Viewer, self).mousePressEvent(event)
 
 class Page_Capture(QWidget):
 
@@ -12,6 +85,8 @@ class Page_Capture(QWidget):
         self.Structure_Page()
 
         self.Names_Page()
+
+        self.Control_Buttons()
 
     def Structure_Page(self):
 
@@ -128,11 +203,11 @@ class Page_Capture(QWidget):
 
         self.LayoutV_Prin.addWidget(self.fm_control_capture)
 
-        self.gv_Principal_imag = QGraphicsView(self)
+        self.gv_Principal_imag = Viewer(self)
         self.gv_Principal_imag.setObjectName(u"gv_Principal_imag")
         self.gv_Principal_imag.setLayoutDirection(Qt.LeftToRight)
-        self.gv_Principal_imag.setStyleSheet(u"background-color: rgb(85, 170, 127);")
-        self.gv_Principal_imag.setDragMode(QGraphicsView.ScrollHandDrag)
+        # self.gv_Principal_imag.setStyleSheet(u"background-color: rgb(85, 170, 127);")
+        # self.gv_Principal_imag.setDragMode(QGraphicsView.ScrollHandDrag)
 
         self.LayoutV_Prin.addWidget(self.gv_Principal_imag)
 
@@ -150,58 +225,99 @@ class Page_Capture(QWidget):
         self.LayoutH_fm_list_imag.setSpacing(1)
         self.LayoutH_fm_list_imag.setObjectName(u"LayoutH_fm_list_imag")
         self.LayoutH_fm_list_imag.setContentsMargins(1, 1, 1, 1)
-        self.lb_list_imag_1 = QLabel(self.fm_list_imag)
-        self.lb_list_imag_1.setObjectName(u"lb_list_imag_1")
-        self.lb_list_imag_1.setScaledContents(True)
-        self.lb_list_imag_1.setAlignment(Qt.AlignCenter)
 
-        self.LayoutH_fm_list_imag.addWidget(self.lb_list_imag_1)
+        self.lb_list_imag = [None] * 7
 
-        self.lb_list_imag_2 = QLabel(self.fm_list_imag)
-        self.lb_list_imag_2.setObjectName(u"lb_list_imag_2")
-        self.lb_list_imag_2.setScaledContents(True)
-        self.lb_list_imag_2.setAlignment(Qt.AlignCenter)
+        for i in range(7):
 
-        self.LayoutH_fm_list_imag.addWidget(self.lb_list_imag_2)
+            self.lb_list_imag[i] = QLabel(self.fm_list_imag)
+            self.lb_list_imag[i].setObjectName("lb_list_imag_" + str(i + 1))
+            self.lb_list_imag[i].setScaledContents(True)
+            self.lb_list_imag[i].setAlignment(Qt.AlignCenter)
 
-        self.lb_list_imag_3 = QLabel(self.fm_list_imag)
-        self.lb_list_imag_3.setObjectName(u"lb_list_imag_3")
-        self.lb_list_imag_3.setScaledContents(True)
-        self.lb_list_imag_3.setAlignment(Qt.AlignCenter)
-
-        self.LayoutH_fm_list_imag.addWidget(self.lb_list_imag_3)
-
-        self.lb_list_imag_4 = QLabel(self.fm_list_imag)
-        self.lb_list_imag_4.setObjectName(u"lb_list_imag_4")
-        self.lb_list_imag_4.setScaledContents(True)
-        self.lb_list_imag_4.setAlignment(Qt.AlignCenter)
-
-        self.LayoutH_fm_list_imag.addWidget(self.lb_list_imag_4)
-
-        self.lb_list_imag_5 = QLabel(self.fm_list_imag)
-        self.lb_list_imag_5.setObjectName(u"lb_list_imag_5")
-        self.lb_list_imag_5.setScaledContents(True)
-        self.lb_list_imag_5.setAlignment(Qt.AlignCenter)
-
-        self.LayoutH_fm_list_imag.addWidget(self.lb_list_imag_5)
-
-        self.lb_list_imag_6 = QLabel(self.fm_list_imag)
-        self.lb_list_imag_6.setObjectName(u"lb_list_imag_6")
-        self.lb_list_imag_6.setScaledContents(True)
-        self.lb_list_imag_6.setAlignment(Qt.AlignCenter)
-
-        self.LayoutH_fm_list_imag.addWidget(self.lb_list_imag_6)
-
-        self.lb_list_imag_7 = QLabel(self.fm_list_imag)
-        self.lb_list_imag_7.setObjectName(u"lb_list_imag_7")
-        self.lb_list_imag_7.setScaledContents(True)
-        self.lb_list_imag_7.setAlignment(Qt.AlignCenter)
-
-        self.LayoutH_fm_list_imag.addWidget(self.lb_list_imag_7)
+            self.LayoutH_fm_list_imag.addWidget(self.lb_list_imag[i])
 
         self.LayoutV_Prin.addWidget(self.fm_list_imag)
 
         self.LayoutV_Prin.setStretch(2, 20)
 
     def Names_Page(self):
+
         self.lb_wavelenth_capture.setText('longitud de imagen')
+
+        ##############################
+        # Control Buttons
+        ##############################
+
+    def Control_Buttons(self):
+
+        self.pb_capture.clicked.connect(self.Control_pb_capture)
+
+    def Control_pb_capture(self):
+
+        if self.App.Core_App.camera_init and self.App.Core_App.iluminator_init:
+
+            Iluminator = self.App.Core_App.Iluminator_MultiSpectral
+            Camera = self.App.Core_App.Camera
+
+            Camera.Mode_Acquisition_Multispectral()
+
+            Camera.Set_Buffer_Count(len(Iluminator.get_leds()))
+
+            Camera.Set_Buffer_Handling_Mode('OldestFirstOverwrite')
+
+            Camera.Init_Acquisition()
+
+            Iluminator.set_time_sleepc(1e-1)
+
+            Iluminator.shot_multispectral()
+
+            for led in Iluminator.get_leds():
+                index = Iluminator.leds[led]
+                Camera.Acquire_Image(Iluminator.Wavelengths[index])
+
+            Camera.End_Acquisition()
+
+            self.Charge_Images()
+
+    def Charge_Images(self):
+        Iluminator = self.App.Core_App.Iluminator_MultiSpectral
+
+        Imagenes = self.App.Core_App.Patch_Acquisition.entryInfoList(["*.bmp"],
+                                                                     QDir.Files, QDir.Name)
+
+        self.imagenesCarpeta = [imagen.absoluteFilePath() for imagen in Imagenes]
+
+        self.index_PImag = 9
+        imagen_prin = QPixmap(self.imagenesCarpeta[self.index_PImag])
+        index = Iluminator.leds[Iluminator.get_leds()[self.index_PImag]]
+        self.lb_wavelenth_capture.setText(Iluminator.Wavelengths[index] + ' nm')
+        self.gv_Principal_imag.setPhoto(imagen_prin)
+
+        self.Charge_lb_list_imag()
+
+    def Charge_lb_list_imag(self):
+
+        if len(self.imagenesCarpeta) < 7:
+
+            inicio = 0
+            fin = len(self.imagenesCarpeta)
+
+        else:
+            inicio = self.index_PImag - 3
+            fin = inicio + 7
+
+            if inicio < 0:
+                fin -= inicio
+                inicio -= inicio
+
+            if fin > len(self.imagenesCarpeta):
+                dif = fin - len(self.imagenesCarpeta)
+                inicio -= dif
+                fin -= dif
+
+        for i, nombreimagen in enumerate(self.imagenesCarpeta[inicio:fin]):
+            rect = self.lb_list_imag[i].rect()
+            imagen = QPixmap(nombreimagen)
+            imagen = imagen.scaled(rect.height(), rect.width(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.lb_list_imag[i].setPixmap(imagen)

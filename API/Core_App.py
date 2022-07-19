@@ -20,6 +20,8 @@ class Core_App:
 
         # carpeta temporal
         subprocess.run('md temp', shell=True)
+        subprocess.run('attrib +h temp', shell=True)
+        self.Patch_Acquisition = QDir(QDir.currentPath() + '/temp')
     ##########################################
     # timer para actualizacion del boton
     ##########################################

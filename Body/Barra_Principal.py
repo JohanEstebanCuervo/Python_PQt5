@@ -2,6 +2,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+import subprocess
+
 
 class Barra_Principal(QFrame):
 
@@ -184,12 +186,14 @@ class Barra_Principal(QFrame):
 
     def exit_app(self):
 
-        #if self.camera_init:
+        if self.App.Core_App.camera_init:
 
-        #    del self.camera
+            del self.App.Core_App.Camera
 
-        #if self.corona_init:
+        if self.App.Core_App.iluminator_init:
 
-        #    del self.corona
+            del self.App.Core_App.Iluminator_MultiSpectral
+
+        subprocess.run('rmdir /s /q temp', shell=True)
 
         self.App.close()
