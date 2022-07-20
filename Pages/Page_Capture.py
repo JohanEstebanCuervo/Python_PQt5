@@ -2,6 +2,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+
 class Viewer(QGraphicsView):
     photoClicked = pyqtSignal(QPoint)
 
@@ -49,7 +50,7 @@ class Viewer(QGraphicsView):
             self._empty = True
             self.setDragMode(QGraphicsView.NoDrag)
             self._photo.setPixmap(QPixmap())
-        #self.fitInView()
+        # self.fitInView()
 
     def wheelEvent(self, event):
         if self.hasPhoto():
@@ -75,6 +76,7 @@ class Viewer(QGraphicsView):
         if self._photo.isUnderMouse():
             self.photoClicked.emit(self.mapToScene(event.pos()).toPoint())
         super(Viewer, self).mousePressEvent(event)
+
 
 class Page_Capture(QWidget):
 
@@ -282,7 +284,7 @@ class Page_Capture(QWidget):
 
             self.Charge_Images(0)
 
-    def Charge_Images(self,index_prin):
+    def Charge_Images(self, index_prin):
         Iluminator = self.App.Core_App.Iluminator_MultiSpectral
 
         Imagenes = self.App.Core_App.Patch_Acquisition.entryInfoList(["*.bmp"],
