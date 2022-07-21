@@ -7,7 +7,6 @@ from API.VirtualCam import *
 import methods.Funciones_Adquisicion as Fun_Ad
 
 from PyQt5.QtCore import QDir, QTimer, QThread
-import PySpin
 import subprocess
 
 
