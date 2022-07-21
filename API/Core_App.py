@@ -6,9 +6,76 @@ from API.VirtualCam import *
 
 import methods.Funciones_Adquisicion as Fun_Ad
 
-from PyQt5.QtCore import QDir, QTimer
+from PyQt5.QtCore import QDir, QTimer, QThread
 import PySpin
 import subprocess
+
+
+class Check_Connection_proces(QThread):
+
+    def __init__(self, App):
+        super().__init__()
+        self.App = App
+        self.corona_error = False
+        self.camera_error = False
+
+    def run(self):
+        Core_App = self.App.Core_App
+        self.corona_error = False
+        self.camera_error = False
+        if Core_App.iluminator_init:
+            self.Update_list_ports()
+            bandera = 0
+            for port in self.list_ports:
+                if(port == self.App.Stacked_Pages.page_corona.lb_sc_port.text()):
+                    bandera = 1
+                    break
+
+            if bandera == 0:
+                self.corona_error = True
+
+        if Core_App.camera_init:
+            self.Update_list_cameras()  # optimizar ya que es muy lento
+            bandera = 0
+            for cam in self.list_cameras:
+                if(cam == self.App.Stacked_Pages.page_camera.lb_sca_camera.text()):
+                    bandera = 1
+                    break
+
+            if bandera == 0:
+                self.camera_error = True
+
+    def Update_list_ports(self, Update_cb_listPort=False):
+        self.list_ports = Fun_Ad.Serial_Port_Select(terminal=False)
+        self.list_ports.append('VirtualIluminator')
+
+        if Update_cb_listPort:
+            self.App.Stacked_Pages.page_corona.cb_listPort.clear()
+
+            if len(self.list_ports) > 1:
+                self.App.Stacked_Pages.page_corona.cb_listPort.addItems(self.list_ports)
+
+            elif len(self.list_ports) == 1:
+                self.App.Stacked_Pages.page_corona.cb_listPort.addItem(list_ports[0])
+
+    def Update_list_cameras(self, Update_cb_listCameras=False):
+        self.list_cameras = Fun_Ad.Cameras_List()
+        if self.list_cameras:
+
+            self.list_cameras = ['VirtualCamera']
+        else:
+
+            self.list_cameras.append('VirtualCamera')
+
+        if Update_cb_listCameras:
+            ComBox_cameras = self.App.Stacked_Pages.page_camera.cb_listCameras
+
+            ComBox_cameras.clear()
+            if len(self.list_cameras) > 1:
+                ComBox_cameras.addItems(self.list_cameras)
+
+            elif len(self.list_cameras) == 1:
+                ComBox_cameras.addItem(self.list_cameras[0])
 
 
 class Core_App:
@@ -26,43 +93,32 @@ class Core_App:
     # timer para actualizacion del boton
     ##########################################
 
+        self.check = Check_Connection_proces(self.App)
+        self.check.finished.connect(self.CompCheck)
+
         self.timer = QTimer()
-        self.timer.timeout.connect(self.Check_Conection)
+        self.timer.timeout.connect(lambda: self.check.start())
         self.timer.start(2000)
         self.iluminator_init = False
         self.camera_init = False
 
-    def Check_Conection(self):
+    def CompCheck(self):
 
-        if self.iluminator_init:
-            self.Update_list_ports()
-            bandera = 0
-            for port in self.list_ports:
-                if(port == self.App.Stacked_Pages.page_corona.lb_sc_port.text()):
-                    bandera = 1
-                    break
+        if self.check.camera_error:
 
-            if bandera == 0:
-                self.iluminator_init = False
-                self.App.Barra_Principal.pb_error_conection_corona.setStyleSheet("background-color : red; border-radius: 10px")
-                self.App.Barra_Principal.lb_error_conection_corona.setText("Corona desconectada")
-                self.fm_init_corona.show()
-                self.fm_settings_corona.hide()
+            self.camera_init = False
+            self.App.Barra_Principal.pb_error_conection_camera.setStyleSheet("background-color : red; border-radius: 10px")
+            self.App.Barra_Principal.lb_error_conection_camera.setText("Camara desconectada")
+            self.App.Stacked_Pages.page_camera.fm_init_camera.show()
+            self.App.Stacked_Pages.page_camera.fm_settings_camera.hide()
 
-        if self.camera_init:
-            # self.Update_list_cameras() optimizar ya que es muy lento
-            bandera = 0
-            for cam in self.list_cameras:
-                if(cam == self.App.Stacked_Pages.page_camera.lb_sca_camera.text()):
-                    bandera = 1
-                    break
+        if self.check.corona_error:
 
-            if bandera == 0:
-                self.camera_init = False
-                self.App.Barra_Principal.pb_error_conection_camera.setStyleSheet("background-color : red; border-radius: 10px")
-                self.App.Barra_Principal.lb_error_conection_camera.setText("Camara desconectada")
-                self.fm_init_corona.show()
-                self.fm_settings_corona.hide()
+            self.iluminator_init = False
+            self.App.Barra_Principal.pb_error_conection_corona.setStyleSheet("background-color : red; border-radius: 10px")
+            self.App.Barra_Principal.lb_error_conection_corona.setText("Corona desconectada")
+            self.App.Stacked_Pages.page_corona.fm_init_corona.show()
+            self.App.Stacked_Pages.page_corona.fm_settings_corona.hide()
 
     def Update_list_ports(self, Update_cb_listPort=False):
         self.list_ports = Fun_Ad.Serial_Port_Select(terminal=False)
