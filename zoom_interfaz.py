@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-
-
+import cv2
+import numpy as np
 class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = QtCore.pyqtSignal(QtCore.QPoint)
 
@@ -102,7 +102,9 @@ class Window(QtWidgets.QWidget):
         VBlayout.addLayout(HBlayout)
 
     def loadImage(self):
-        self.viewer.setPhoto(QtGui.QPixmap('8PSK_Gray_Coded.png'))
+        imagen = cv2.imread('8PSK_Gray_Coded.png')
+        pixmap = self.convert_cv_qt(imagen)
+        self.viewer.setPhoto(pixmap)
 
     def pixInfo(self):
         self.viewer.toggleDragMode()
@@ -110,6 +112,17 @@ class Window(QtWidgets.QWidget):
     def photoClicked(self, pos):
         if self.viewer.dragMode() == QtWidgets.QGraphicsView.NoDrag:
             self.editPixInfo.setText('%d, %d' % (pos.x(), pos.y()))
+
+    def convert_cv_qt(self, cv_img):
+        """Convert from an opencv image to QPixmap"""
+        rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+        print(np.shape(rgb_image))
+        print(type(rgb_image))
+        h, w, ch = rgb_image.shape
+        bytes_per_line = ch * w
+        convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+
+        return QtGui.QPixmap.fromImage(convert_to_Qt_format)
 
 
 if __name__ == '__main__':

@@ -2,6 +2,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+from API.ColorReproduction_API import *
+
+import cv2
 
 class Viewer(QGraphicsView):
     photoClicked = pyqtSignal(QPoint)
@@ -41,7 +44,7 @@ class Viewer(QGraphicsView):
 
     def setPhoto(self, pixmap=None):
         self._zoom = 0
-
+        self.resetTransform()
         if pixmap and not pixmap.isNull():
             self._empty = False
             self.setDragMode(QGraphicsView.ScrollHandDrag)
@@ -89,6 +92,8 @@ class Page_ColorReproduction(QWidget):
         self.Names_Page()
 
         self.Control_Buttons()
+
+        self.fm_options_ColorReproduction.hide()
 
     def Structure_Page(self):
 
@@ -156,7 +161,6 @@ class Page_ColorReproduction(QWidget):
 
         self.LayoutH_fm_control_capture.addWidget(self.pb_charge_capture)
 
-
         self.pb_after_capture = QPushButton(self.fm_control_ColorReproduction)
         self.pb_after_capture.setObjectName(u"pb_after_capture")
         self.pb_after_capture.setMinimumSize(QSize(30, 30))
@@ -176,8 +180,8 @@ class Page_ColorReproduction(QWidget):
         self.pb_next_capture.setMinimumSize(QSize(30, 30))
         self.pb_next_capture.setMaximumSize(QSize(30, 30))
         self.pb_next_capture.setStyleSheet(u"QPushButton:hover{\n"
-                                            "background-color: rgb(255, 255, 0);\n"
-                                            "}")
+                                           "background-color: rgb(255, 255, 0);\n"
+                                           "}")
         icon5 = QIcon()
         icon5.addFile(u"iconos/next.png", QSize(), QIcon.Normal, QIcon.Off)
         self.pb_next_capture.setIcon(icon5)
@@ -190,8 +194,8 @@ class Page_ColorReproduction(QWidget):
         self.pb_save_viewer.setMinimumSize(QSize(30, 30))
         self.pb_save_viewer.setMaximumSize(QSize(30, 30))
         self.pb_save_viewer.setStyleSheet(u"QPushButton:hover{\n"
-                                            "background-color:  rgb(170, 0, 127);\n"
-                                            "}")
+                                          "background-color:  rgb(170, 0, 127);\n"
+                                          "}")
         icon7 = QIcon()
         icon7.addFile(u"iconos/save.png", QSize(), QIcon.Normal, QIcon.Off)
         self.pb_save_viewer.setIcon(icon7)
@@ -204,8 +208,8 @@ class Page_ColorReproduction(QWidget):
         self.pb_clean_capture.setMinimumSize(QSize(30, 30))
         self.pb_clean_capture.setMaximumSize(QSize(30, 30))
         self.pb_clean_capture.setStyleSheet(u"QPushButton:hover{\n"
-                                             "background-color:  rgb(255, 0, 0);\n"
-                                             "}")
+                                            "background-color:  rgb(255, 0, 0);\n"
+                                            "}")
         icon8 = QIcon()
         icon8.addFile(u"iconos/stop2.png", QSize(), QIcon.Normal, QIcon.Off)
         self.pb_clean_capture.setIcon(icon8)
@@ -220,6 +224,59 @@ class Page_ColorReproduction(QWidget):
         self.LayoutH_fm_control_capture.addWidget(self.lb_wavelenth_capture)
 
         self.LayoutV_Prin.addWidget(self.fm_control_ColorReproduction)
+
+        self.fm_options_ColorReproduction = QFrame(self)
+        self.fm_options_ColorReproduction.setObjectName(u"fm_options_ColorReproduction")
+        self.fm_options_ColorReproduction.setMinimumSize(QSize(0, 30))
+        self.fm_options_ColorReproduction.setMaximumSize(QSize(16777215, 30))
+        self.fm_options_ColorReproduction.setStyleSheet(u"QFrame{\n"
+                                                        "background-color: white;\n"
+                                                        "}\n"
+                                                        "\n"
+                                                        "\n"
+                                                        "QPushButton{\n"
+                                                        "background-color: white;\n"
+                                                        "   \n"
+                                                        "}\n"
+                                                        "\n"
+                                                        "QPushButton:hover{\n"
+                                                        "background-color:  rgb(204, 204, 204);\n"
+                                                        "}")
+        self.fm_options_ColorReproduction.setFrameShape(QFrame.StyledPanel)
+        self.fm_options_ColorReproduction.setFrameShadow(QFrame.Raised)
+        self.LayoutH_fm_options_ColorReproduction = QHBoxLayout(self.fm_options_ColorReproduction)
+        self.LayoutH_fm_options_ColorReproduction.setSpacing(0)
+        self.LayoutH_fm_options_ColorReproduction.setObjectName(u"LayoutH_fm_options_ColorReproduction")
+        self.LayoutH_fm_options_ColorReproduction.setContentsMargins(0, 0, 0, 0)
+
+        self.pb_colorReproduce = QPushButton(self.fm_options_ColorReproduction)
+        self.pb_colorReproduce.setObjectName(u"pb_colorReproduce")
+        self.pb_colorReproduce.setMinimumSize(QSize(10, 30))
+        self.pb_colorReproduce.setMaximumSize(QSize(16777215, 30))
+        self.LayoutH_fm_options_ColorReproduction.addWidget(self.pb_colorReproduce)
+
+        self.pb_masks = QPushButton(self.fm_options_ColorReproduction)
+        self.pb_masks.setObjectName(u"pb_masks")
+        self.pb_masks.setMinimumSize(QSize(10, 30))
+        self.pb_masks.setMaximumSize(QSize(16777215, 30))
+        self.LayoutH_fm_options_ColorReproduction.addWidget(self.pb_masks)
+
+        self.pb_ecualizacion = QPushButton(self.fm_options_ColorReproduction)
+        self.pb_ecualizacion.setObjectName(u"pb_ecualizacion")
+        self.pb_ecualizacion.setMinimumSize(QSize(10, 30))
+        self.pb_ecualizacion.setMaximumSize(QSize(16777215, 30))
+        self.LayoutH_fm_options_ColorReproduction.addWidget(self.pb_ecualizacion)
+
+        self.pb_colorCorrection = QPushButton(self.fm_options_ColorReproduction)
+        self.pb_colorCorrection.setObjectName(u"pb_colorCorrection")
+        self.pb_colorCorrection.setMinimumSize(QSize(10, 30))
+        self.pb_colorCorrection.setMaximumSize(QSize(16777215, 30))
+        self.LayoutH_fm_options_ColorReproduction.addWidget(self.pb_colorCorrection)
+
+        self.spacer_bar = QSpacerItem(100, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.LayoutH_fm_options_ColorReproduction.addItem(self.spacer_bar)
+
+        self.LayoutV_Prin.addWidget(self.fm_options_ColorReproduction)
 
         self.gv_Principal_imag = Viewer(self)
         self.gv_Principal_imag.setObjectName(u"gv_Principal_imag")
@@ -262,6 +319,10 @@ class Page_ColorReproduction(QWidget):
     def Names_Page(self):
 
         self.lb_wavelenth_capture.setText('longitud de imagen')
+        self.pb_colorReproduce.setText(' Color ')
+        self.pb_masks.setText(' Mascaras ')
+        self.pb_ecualizacion.setText(' Ecualización ')
+        self.pb_colorCorrection.setText(' Corrección ')
 
         ##############################
         # Control Buttons
@@ -269,52 +330,52 @@ class Page_ColorReproduction(QWidget):
 
     def Control_Buttons(self):
 
-        self.pb_charge_capture.clicked.connect(self.Control_pb_capture)
+        self.pb_charge_capture.clicked.connect(self.Control_pb_charge_capture)
         self.pb_next_capture.clicked.connect(self.Control_pb_next_capture)
         self.pb_after_capture.clicked.connect(self.Control_pb_after_capture)
+        self.pb_colorReproduce.clicked.connect(self.Control_pb_colorReproduce)
 
-    def Control_pb_capture(self):
+    def Control_pb_colorReproduce(self):
 
-        if self.App.Core_App.camera_init and self.App.Core_App.iluminator_init:
+        imagen = np.array(self.Color_repro.ReproduccionCie1931()).astype('float')
+        imagen = (imagen * 255).astype(np.uint8)
 
-            Iluminator = self.App.Core_App.Iluminator_MultiSpectral
-            Camera = self.App.Core_App.Camera
+        pixmap = self.convert_cv_qt(imagen)
 
-            Camera.Mode_Acquisition_Multispectral()
+        self.gv_Principal_imag.setPhoto(pixmap)
+        self.lb_wavelenth_capture.setText('Imagen RGB')
 
-            Camera.Set_Buffer_Count(len(Iluminator.get_leds()))
+    def Control_pb_charge_capture(self):
+        self.Color_repro = ColorReproduction()
 
-            Camera.Set_Buffer_Handling_Mode('OldestFirstOverwrite')
+        self.Charge_Images(0)
 
-            Camera.Init_Acquisition()
+        self.Color_repro.Charge_CIE()
+        file = self.App.Core_App.Patch_Acquisition.absolutePath()
+        N = len(self.imagenesCarpeta)
+        self.Color_repro.Load_Capture(file, N)
 
-            Iluminator.set_time_sleepc(1e-1)
-
-            Iluminator.shot_multispectral()
-
-            for led in Iluminator.get_leds():
-                index = Iluminator.leds[led]
-                Camera.Acquire_Image(Iluminator.Wavelengths[index])
-
-            Camera.End_Acquisition()
-
-            self.Charge_Images(0)
+        self.fm_options_ColorReproduction.show()
 
     def Charge_Images(self, index_prin):
-        Iluminator = self.App.Core_App.Iluminator_MultiSpectral
 
         Imagenes = self.App.Core_App.Patch_Acquisition.entryInfoList(["*.bmp"],
                                                                      QDir.Files, QDir.Name)
 
         self.imagenesCarpeta = [imagen.absoluteFilePath() for imagen in Imagenes]
+        if len(self.imagenesCarpeta) != 0:
+            Iluminator = self.App.Core_App.Iluminator_MultiSpectral
+            self.index_PImag = index_prin
+            imagen_prin = QPixmap(self.imagenesCarpeta[self.index_PImag])
+            index = Iluminator.leds[Iluminator.get_leds()[self.index_PImag]]
+            self.lb_wavelenth_capture.setText(Iluminator.Wavelengths[index] + ' nm')
+            self.gv_Principal_imag.setPhoto(imagen_prin)
 
-        self.index_PImag = index_prin
-        imagen_prin = QPixmap(self.imagenesCarpeta[self.index_PImag])
-        index = Iluminator.leds[Iluminator.get_leds()[self.index_PImag]]
-        self.lb_wavelenth_capture.setText(Iluminator.Wavelengths[index] + ' nm')
-        self.gv_Principal_imag.setPhoto(imagen_prin)
-
-        self.Charge_lb_list_imag()
+            self.Charge_lb_list_imag()
+            self.Color_repro.wavelengths = []
+            for led_name in Iluminator.get_leds():
+                index = Iluminator.leds[led_name]
+                self.Color_repro.wavelengths.append(int(Iluminator.Wavelengths[index]))
 
     def Charge_lb_list_imag(self):
 
@@ -355,3 +416,13 @@ class Page_ColorReproduction(QWidget):
 
         if index >= 0:
             self.Charge_Images(index)
+
+    def convert_cv_qt(self, imagen_ent):
+        """Convert from an opencv image to QPixmap"""
+        imagen = cv2.cvtColor(imagen_ent, cv2.COLOR_BGR2RGB)
+        imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
+        h, w, ch = imagen.shape
+        bytes_per_line = ch * w
+        convert_to_Qt_format = QImage(imagen.data, w, h, bytes_per_line, QImage.Format_RGB888)
+
+        return QPixmap.fromImage(convert_to_Qt_format)

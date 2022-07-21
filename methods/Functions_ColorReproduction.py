@@ -23,21 +23,22 @@ def ext_masks(file, listing):
 
 
 def Read_Capture(file, listing):
-    imagenespatron=[]
+    imagenespatron = []
     for name in sorted(listing):
-        imagen=cv2.cvtColor(cv2.imread(file +"/"+name), cv2.COLOR_BGR2GRAY)#cargamos imagenes multiespectrales en escala de grises
-        imagenespatron=np.concatenate((imagenespatron,np.squeeze(np.reshape(imagen,(1,-1)))),axis=0) #se convierte la imagen en una columna y se concatena con las demas del espectro
+        imagen = cv2.cvtColor(cv2.imread(file + "/" + name), cv2.COLOR_BGR2GRAY)  # cargamos imagenes multiespectrales en escala de grises
+        imagenespatron = np.concatenate((imagenespatron, np.squeeze(np.reshape(imagen, (1, - 1)))), axis=0)  # se convierte la imagen en una columna y se concatena con las demas del espectro
 
-    shape_imag=np.shape(imagen)
-    imagenespatron=imagenespatron.reshape(len(listing),-1)#se redimensiona a  Filas * N imagenes multiespectrales filas de pixeles de las imagenes espectrales
-    
-    return imagenespatron,shape_imag
+    shape_imag = np.shape(imagen)
+    imagenespatron = imagenespatron.reshape(len(listing), - 1)  # se redimensiona a  Filas * N imagenes multiespectrales filas de pixeles de las imagenes espectrales
+
+    return imagenespatron/255, shape_imag
+
 
 def Read_Wavelength_Capture(listing):
-    wavelength=[]
+    wavelength = []
     for name in sorted(listing):
-        a=name.find('(')+1
-        wavelength.append(int(name[a:a+3]))
+        a = name.find('(') + 1
+        wavelength.append(int(name[a: a + 3]))
     return wavelength
 
 def Ideal_Color_patch_pixel(color_check,masks):
@@ -101,7 +102,7 @@ def Pesos_ecualizacion(imagenes_patron, mask, valor_ideal=243,shape_imag=(480,64
         parche = im[np.where(mask==255)]
         prom = np.mean(parche)
         promedios.append(prom)
-    
+
     Pesos_ecu = np.divide(valor_ideal*np.ones(len(promedios)),np.array(promedios))
     return Pesos_ecu
 
@@ -207,20 +208,22 @@ def offset(im):
     return im
 
 # funcion para mostrar imagenes con matplotlib  con rango de flotantes (0 a  1)
+
+
 def imshow(titulo, imagen):
-    
-    if(len(np.shape(imagen))==2):
-        imagen1= np.zeros((np.shape(imagen)[0],np.shape(imagen)[1],3))
-        imagen1[:,:,0]=imagen
-        imagen1[:,:,1]=imagen
-        imagen1[:,:,2]=imagen
-        imagen=imagen1
-        
+
+    if(len(np.shape(imagen)) == 2):
+        imagen1 = np.zeros((np.shape(imagen)[0], np.shape(imagen)[1], 3))
+        imagen1[:, :, 0] = imagen
+        imagen1[:, :, 1] = imagen
+        imagen1[:, :, 2] = imagen
+        imagen = imagen1
+
     plt.imshow(imagen)
     plt.title(titulo)
     plt.axis('off')
     plt.show()
-    
+
 
 # error de reproduccion distancia euclidea  pixel por pixel de cada parche
 # y promedio de error por parche para multiples imagenes reconstruidas
@@ -592,10 +595,11 @@ def comparacion_color_check(name,im_RGB,color_check_RGB,masks,file=''):
 
 
 #%%
-def ReproduccionCie1931(imagenes_patron,shape_imag=(480,640,3),selec_imagenes='All'):
+
+def ReproduccionCie19312(imagenes_patron,Pesos_ecu,shape_imag=(480,640,3),select_wavelengths='All'):
      
-    if (selec_imagenes=='All'):
-        selec_imagenes=range(np.shape(imagenes_patron)[0])
+    if (select_wavelengths=='All'):
+        select_wavelengths=range(np.shape(imagenes_patron)[0])
         
     D65=  np.array([
           [410,	91.486000],
@@ -637,71 +641,11 @@ def ReproduccionCie1931(imagenes_patron,shape_imag=(480,640,3),selec_imagenes='A
 
 
     #% Coeficientes
-    Coef= (CIE1931[selec_imagenes,1:]*(np.ones((3,1))*D65[selec_imagenes,1].T).T).T
+    Coef= (CIE1931[select_wavelengths,1:]*(np.ones((3,1))*D65[select_wavelengths,1].T).T).T
     N = np.sum(Coef,axis=1)
     #%  Reproduccion de color usando CIE
     
-    xyz = np.dot(Coef,imagenes_patron[selec_imagenes,:]).T
-    xyz = xyz/N[1]
-    
-    rgb = recorte(np.dot(XYZ2RGB,xyz.T).T)
-    
-    im_RGB=np.reshape(rgb,shape_imag)
-    
-    return im_RGB
-
-#%%
-
-def ReproduccionCie19312(imagenes_patron,Pesos_ecu,shape_imag=(480,640,3),selec_imagenes='All'):
-     
-    if (selec_imagenes=='All'):
-        selec_imagenes=range(np.shape(imagenes_patron)[0])
-        
-    D65=  np.array([
-          [410,	91.486000],
-          [450,	117.008000],
-          [470,	114.861000],
-          [490,	108.811000],
-          [505,	108.578000],
-          [530,	107.689000],
-          [560,	100.000000],
-          [590,	88.685600],
-          [600,	90.006200],
-          [620,	87.698700],
-          [630, 83.288600],
-          [650,	80.026800],
-          [720,	61.604000],
-      
-          ])
-    
-    CIE1931 =  np.array([
-         
-         [410,	0.043510,	0.001210,	0.207400],
-         [450,	0.336200,	0.038000,	1.772110],
-         [470,	0.195360,	0.090980,	1.287640],
-         [490,	0.032010,	0.208020,	0.465180],
-         [505,	0.002400,	0.407300,	0.212300],
-         [530,	0.165500,	0.862000,	0.042160],
-         [560,	0.594500,	0.995000,	0.003900],
-         [590,	1.026300,	0.757000,	0.001100],
-         [600,	1.062200,	0.631000,	0.000800],
-         [620,	0.854450,	0.381000,	0.000190],
-         [630,	0.642400,	0.265000,	0.000050],
-         [650,	0.283500,	0.107000,	0.000000],
-         [720,	0.002899,	0.001047,	0.000000],
-         ])
-    
-    XYZ2RGB= np.array([[3.2406, -1.5372, -0.4986],
-             [-0.9689, 1.8758, 0.0415],
-             [0.0557, -0.2040, 1.0570],])
-
-
-    #% Coeficientes
-    Coef= (CIE1931[selec_imagenes,1:]*(np.ones((3,1))*D65[selec_imagenes,1].T).T).T
-    N = np.sum(Coef,axis=1)
-    #%  Reproduccion de color usando CIE
-    
-    xyz = np.dot(Coef,(imagenes_patron[selec_imagenes,:].T*Pesos_ecu).T).T
+    xyz = np.dot(Coef,(imagenes_patron[select_wavelengths,:].T*Pesos_ecu).T).T
     #print(N)
     xyz = xyz/N[1]
     
@@ -723,7 +667,7 @@ def mejor_combinacion(imagenes_patron,masks,color_check,Cant_Image,type_error='m
             print('Cant imagenes'+str(int(Cant_Image))+' Avance:' + str("{0:.2f}".format(i/len(subset)*100))+str('%'))
     # #%%  Reproduccion de color usando CIE
         
-        im_RGB= ReproduccionCie1931(imagenes_patron,selec_imagenes=Comb)
+        im_RGB= ReproduccionCie1931(imagenes_patron,select_wavelengths=Comb)
         #im_Lab= cv2.cvtColor(im_RGB, cv2.COLOR_RGB2LAB)
         errores = Error_de_reproduccion([im_RGB], masks, color_check)
         
@@ -735,7 +679,7 @@ def mejor_combinacion(imagenes_patron,masks,color_check,Cant_Image,type_error='m
         #fun.imshow('Imagen reproducción CIE 1931',im_RGB)
     
     #%%  Reproduccion de color usando CIE
-    im_RGB= ReproduccionCie1931(imagenes_patron,selec_imagenes=mejor_comb)
+    im_RGB= ReproduccionCie1931(imagenes_patron,select_wavelengths=mejor_comb)
     imshow('IR ERGB CIE 1931 im '+str(int(Cant_Image)),im_RGB)
     if (imagen_write=='on'):
         imwrite('Resultados/Imagenes\IR ERGB CIE 1931 im '+str(int(Cant_Image))+'.png',im_RGB)

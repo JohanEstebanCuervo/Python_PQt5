@@ -89,8 +89,8 @@ class VirtualCam:
         self.__buffer_count = None
         self.__buffer_handling_mode = None
         self.__trigger_source = None
-        self.imagenes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'A',
-                         'B', 'C', 'D', 'E', 'F']
+        self.imagenes = ['410', '450', '470', '490', '505', '530', '560', '590', '600', '620',
+                         '630', '650', '720', '840', '960']
 
         self.iterador = 0
 

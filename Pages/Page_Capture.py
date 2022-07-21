@@ -41,7 +41,7 @@ class Viewer(QGraphicsView):
 
     def setPhoto(self, pixmap=None):
         self._zoom = 0
-
+        self.resetTransform()
         if pixmap and not pixmap.isNull():
             self._empty = False
             self.setDragMode(QGraphicsView.ScrollHandDrag)
@@ -291,14 +291,14 @@ class Page_Capture(QWidget):
                                                                      QDir.Files, QDir.Name)
 
         self.imagenesCarpeta = [imagen.absoluteFilePath() for imagen in Imagenes]
+        if len(self.imagenesCarpeta) != 0:
+            self.index_PImag = index_prin
+            imagen_prin = QPixmap(self.imagenesCarpeta[self.index_PImag])
+            index = Iluminator.leds[Iluminator.get_leds()[self.index_PImag]]
+            self.lb_wavelenth_capture.setText(Iluminator.Wavelengths[index] + ' nm')
+            self.gv_Principal_imag.setPhoto(imagen_prin)
 
-        self.index_PImag = index_prin
-        imagen_prin = QPixmap(self.imagenesCarpeta[self.index_PImag])
-        index = Iluminator.leds[Iluminator.get_leds()[self.index_PImag]]
-        self.lb_wavelenth_capture.setText(Iluminator.Wavelengths[index] + ' nm')
-        self.gv_Principal_imag.setPhoto(imagen_prin)
-
-        self.Charge_lb_list_imag()
+            self.Charge_lb_list_imag()
 
     def Charge_lb_list_imag(self):
 
