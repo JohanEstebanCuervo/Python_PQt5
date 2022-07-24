@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import *
 
 from Pages.Page_Capture import *
 from Pages.Page_Camera import *
-from Pages.Page_Corona import *
+from Pages.Page_Iluminator import *
 from Pages.Page_ColorReproduction import *
 
 
@@ -21,8 +21,8 @@ class Stacked_Pages(QStackedWidget):
         self.page_camera = Page_Camera(App)
         self.addWidget(self.page_camera)
 
-        self.page_corona = Page_Corona(App)
-        self.addWidget(self.page_corona)
+        self.page_iluminator = Page_Iluminator(App)
+        self.addWidget(self.page_iluminator)
 
         self.page_colorReproduction = Page_ColorReproduction(App)
         self.addWidget(self.page_colorReproduction)

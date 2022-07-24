@@ -57,12 +57,12 @@ class Menu(QFrame):
 
         self.LayoutV_principal.addWidget(self.pb_menu_camera)
 
-        self.pb_menu_corona = QPushButton(self)
-        self.pb_menu_corona.setObjectName(u"pb_menu_corona")
-        self.pb_menu_corona.setMinimumSize(QSize(0, 30))
-        self.pb_menu_corona.setMaximumSize(QSize(16777215, 30))
+        self.pb_menu_iluminator = QPushButton(self)
+        self.pb_menu_iluminator.setObjectName(u"pb_menu_iluminator")
+        self.pb_menu_iluminator.setMinimumSize(QSize(0, 30))
+        self.pb_menu_iluminator.setMaximumSize(QSize(16777215, 30))
 
-        self.LayoutV_principal.addWidget(self.pb_menu_corona)
+        self.LayoutV_principal.addWidget(self.pb_menu_iluminator)
 
         self.pb_menu_colorReproduction = QPushButton(self)
         self.pb_menu_colorReproduction.setObjectName(u"pb_menu_colorReproduction")
@@ -86,7 +86,7 @@ class Menu(QFrame):
 
         self.pb_menu_capture.setText("Capture")
         self.pb_menu_camera.setText("Settings Camera")
-        self.pb_menu_corona.setText("Settings iluminator")
+        self.pb_menu_iluminator.setText("Settings iluminator")
         self.pb_menu_colorReproduction.setText("Color Reproduction")
         self.pb_menu_settings.setText("Settings")
 
@@ -98,16 +98,16 @@ class Menu(QFrame):
         Stacked_Pages = self.App.Stacked_Pages
         self.pb_menu_capture.clicked.connect(lambda: Stacked_Pages.setCurrentWidget(Stacked_Pages.page_capture))
         self.pb_menu_camera.clicked.connect(self.Control_pb_menu_camera)
-        self.pb_menu_corona.clicked.connect(self.Control_pb_menu_corona)
+        self.pb_menu_iluminator.clicked.connect(self.Control_pb_menu_iluminator)
         self.pb_menu_colorReproduction.clicked.connect(lambda: Stacked_Pages.setCurrentWidget(Stacked_Pages.page_colorReproduction))
         self.pb_menu_settings.clicked.connect(lambda: Stacked_Pages.setCurrentWidget(Stacked_Pages.page_settings))
 
-    def Control_pb_menu_corona(self):
+    def Control_pb_menu_iluminator(self):
         if not self.App.Core_App.iluminator_init:
             self.App.Core_App.Update_list_ports(Update_cb_listPort=True)
 
         Stacked_Pages = self.App.Stacked_Pages
-        Stacked_Pages.setCurrentWidget(Stacked_Pages.page_corona)
+        Stacked_Pages.setCurrentWidget(Stacked_Pages.page_iluminator)
 
     def Control_pb_menu_camera(self):
         if not self.App.Core_App.camera_init:

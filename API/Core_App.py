@@ -26,7 +26,7 @@ class Check_Connection_proces(QThread):
             self.Update_list_ports()
             bandera = 0
             for port in self.list_ports:
-                if(port == self.App.Stacked_Pages.page_corona.lb_sc_port.text()):
+                if(port == self.App.Stacked_Pages.page_iluminator.lb_port.text()):
                     bandera = 1
                     break
 
@@ -49,13 +49,13 @@ class Check_Connection_proces(QThread):
         self.list_ports.append('VirtualIluminator')
 
         if Update_cb_listPort:
-            self.App.Stacked_Pages.page_corona.cb_listPort.clear()
+            self.App.Stacked_Pages.page_iluminator.cb_listPort.clear()
 
             if len(self.list_ports) > 1:
-                self.App.Stacked_Pages.page_corona.cb_listPort.addItems(self.list_ports)
+                self.App.Stacked_Pages.page_iluminator.cb_listPort.addItems(self.list_ports)
 
             elif len(self.list_ports) == 1:
-                self.App.Stacked_Pages.page_corona.cb_listPort.addItem(list_ports[0])
+                self.App.Stacked_Pages.page_iluminator.cb_listPort.addItem(list_ports[0])
 
     def Update_list_cameras(self, Update_cb_listCameras=False):
         self.list_cameras = Fun_Ad.Cameras_List()
@@ -116,21 +116,21 @@ class Core_App:
             self.iluminator_init = False
             self.App.Barra_Principal.pb_error_conection_corona.setStyleSheet("background-color : red; border-radius: 10px")
             self.App.Barra_Principal.lb_error_conection_corona.setText("Corona desconectada")
-            self.App.Stacked_Pages.page_corona.fm_init_corona.show()
-            self.App.Stacked_Pages.page_corona.fm_settings_corona.hide()
+            self.App.Stacked_Pages.page_iluminator.fm_init_corona.show()
+            self.App.Stacked_Pages.page_iluminator.fm_settings_corona.hide()
 
     def Update_list_ports(self, Update_cb_listPort=False):
         self.list_ports = Fun_Ad.Serial_Port_Select(terminal=False)
         self.list_ports.append('VirtualIluminator')
 
         if Update_cb_listPort:
-            self.App.Stacked_Pages.page_corona.cb_listPort.clear()
+            self.App.Stacked_Pages.page_iluminator.cb_listPort.clear()
 
             if len(self.list_ports) > 1:
-                self.App.Stacked_Pages.page_corona.cb_listPort.addItems(self.list_ports)
+                self.App.Stacked_Pages.page_iluminator.cb_listPort.addItems(self.list_ports)
 
             elif len(self.list_ports) == 1:
-                self.App.Stacked_Pages.page_corona.cb_listPort.addItem(list_ports[0])
+                self.App.Stacked_Pages.page_iluminator.cb_listPort.addItem(list_ports[0])
 
     def Update_list_cameras(self, Update_cb_listCameras=False):
         self.list_cameras = Fun_Ad.Cameras_List()
@@ -164,7 +164,7 @@ class Core_App:
 
             if Iluminator == 'No device identify':
 
-                self.App.Stacked_Pages.page_corona.lb_init_c_error.setText("Error al iniciar el Iluminador")
+                self.App.Stacked_Pages.page_iluminator.lb_init_c_error.setText("Error al iniciar el Iluminador")
 
             if Iluminator == 'MultiSpectralCrown':
 

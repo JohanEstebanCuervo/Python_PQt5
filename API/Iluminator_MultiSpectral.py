@@ -57,128 +57,65 @@ class Iluminator_MultiSpectral:
 
             return 0
 
-    def set_shot_mode(self, value):
+    def set_shot_mode(self, message):
 
-        try:
-            val = int(value)
+        if self.tx_msg(message):
 
-            if val != 0 and val != 1:
-                print("Valor incorrecto el mensaje solo debe contener un 0 o un 1")
-                return 1
-
-        except:
-
-            print("Valor incorrecto el mensaje solo debe contener un 0 o un 1")
-            return 1
-
-        message = 'T' + str(val) + self.__shot_time_trigger + self.__shot_time_flash + self.__shot_time_timeout + 'U'
-
-        if self.set_shot_time_trigger_flash_timeout(message):
-            print('Error en la configuración del tiempo del modo de disparo')
+            print("Error al configurar shot mode")
             return 1
 
         else:
+
+            self.__shot_mode = message
 
             return 0
 
-    def set_shot_time_trigger(self, value):
+    def set_shot_time_trigger(self, message):
 
-        try:
+        if self.tx_msg(message):
 
-            int(value)
-
-        except:
-
-            print("Valor incorrecto el mensaje solo debe contener 2 digitos")
+            print("Error al configurar time trigger")
             return 1
-
-        if len(value) == 2:
-
-            message = 'T' + self.__shot_mode + value + self.__shot_time_flash + self.__shot_time_timeout + 'U'
-
-            if self.set_shot_time_trigger_flash_timeout(message):
-
-                print('Error en la configuración del tiempo de trigger')
-                return 1
-
-            else:
-
-                return 0
 
         else:
 
-            print("Valor incorrecto se debe ingresar 2 digitos para un valor correcto de tiempo")
+            self.__shot_time_trigger = message
+            return 0
+
+
+    def set_shot_time_flash(self, message):
+
+        if self.tx_msg(message):
+
+            print("Error al configurar tiempo de flash")
             return 1
-
-    def set_shot_time_flash(self, value):
-
-        try:
-
-            int(value)
-
-        except:
-
-            print("Valor incorrecto el mensaje solo debe contener 3 digitos")
-            return 1
-
-        if len(value) == 3:
-
-            message = 'T' + self.__shot_mode + self.__shot_time_trigger + value + self.__shot_time_timeout + 'U'
-
-            if self.set_shot_time_trigger_flash_timeout(message):
-                print('Error en la configuración del tiempo de flash')
-                return 1
-
-            else:
-
-                return 0
-
-        else:
-            print("Valor incorrecto se debe ingresar 3 digitos para un valor correcto de tiempo")
-            return 1
-
-    def set_shot_time_timeout(self, value):
-
-        try:
-
-            int(value)
-
-        except:
-
-            print("Valor incorrecto el mensaje solo debe contener 3 digitos")
-            return 1
-
-        if len(value) == 3:
-
-            message = 'T' + self.__shot_mode + self.__shot_time_trigger + self.__shot_time_flash + value + 'U'
-
-            if self.set_shot_time_trigger_flash_timeout(message):
-                print('Error en la configuración del tiempo muerto')
-                return 1
-
-            else:
-
-                return 0
 
         else:
 
-            print("Valor incorrecto se debe ingresar 3 digitos para un valor correcto de tiempo")
+            self.__shot_time_flash = message
+            return 0
+
+
+    def set_shot_time_timeout(self, message):
+
+        if self.tx_msg(message):
+
+            print("Error al configurar el tiempo muerto")
             return 1
 
-    def set_shot_leds(self, pos_led):
+        else:
 
-        if self.tx_msg(self.__leds[pos_led]):
+            self.__shot_time_timeout = message
 
-            print("Error al configurar el led " + str(pos_led + 1) + " en la corona")
+
+    def set_shot_led(self, index):
+
+        if self.tx_msg(self.__leds[index]):
+
+            print("Error al configurar el led " + str(index + 1) + " en el iluminador")
             return 1
 
     def set_PWM_Leds(self, pwm_leds):
-
-        for pwm_led in pwm_leds:
-
-            if self.tx_msg(pwm_led):
-                print("Error al configurar el PWM de la corona")
-                return 1
 
         self.__PWM_leds = pwm_leds
 
@@ -188,7 +125,7 @@ class Iluminator_MultiSpectral:
 
         self.__shot_message = message
 
-    def set_time_sleepc(self, time):
+    def set_time_sleepc(self, time):  # Float Number, Seconds
 
         self.__timesleepc = time
 
@@ -198,6 +135,9 @@ class Iluminator_MultiSpectral:
 
     def set_leds(self, leds):
         self.__leds = leds
+
+    def set_correct_tx(self, correct_tx):  # Correct mensaje en string
+        self.__correct_tx = correct_tx.encode('utf-8')
 
     #########################
 
@@ -314,7 +254,7 @@ class Iluminator_MultiSpectral:
 
         for i in range(len(self.__leds)):
 
-            if self.set_shot_leds(i):
+            if self.set_shot_led(i):
 
                 return 1
 

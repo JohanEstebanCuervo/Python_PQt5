@@ -35,3 +35,6 @@ class Virtual_Iluminator_MultiSpectral(Iluminator_MultiSpectral):
         self.leds = {}
         for i, led in enumerate(leds):
             self.leds[led] = i
+
+        get
+
