@@ -21,6 +21,8 @@ class Page_Iluminator(QWidget):
 
         self.fm_settings_iluminator.hide()
 
+        self.Veriq = {'leds':False,'PWM': False}
+
     def Structure_Page(self):
 
         self.setObjectName(u"Page_Iluminator")
@@ -78,10 +80,13 @@ class Page_Iluminator(QWidget):
 
         self.gridLayout.addWidget(self.le_shotMessage, 2, 1, 1, 1)
 
-        self.le_timeSleepc = QLineEdit(self.fm_buttons_sc)
-        self.le_timeSleepc.setObjectName(u"le_timeSleepc")
-        self.le_timeSleepc.setInputMask('0.00000')
-        self.gridLayout.addWidget(self.le_timeSleepc, 1, 1, 1, 1)
+        self.sb_timeSleepc = QDoubleSpinBox(self.fm_buttons_sc)
+        self.sb_timeSleepc.setObjectName(u"sb_timeSleepc")
+        self.sb_timeSleepc.setSuffix(' ms')
+        self.sb_timeSleepc.setSingleStep(0.1)
+        self.sb_timeSleepc.setButtonSymbols(QAbstractSpinBox.NoButtons)
+
+        self.gridLayout.addWidget(self.sb_timeSleepc, 1, 1, 1, 1)
 
         self.lb_shot_message = QLabel(self.fm_buttons_sc)
         self.lb_shot_message.setObjectName(u"lb_shot_message")
@@ -101,29 +106,34 @@ class Page_Iluminator(QWidget):
 
         self.gridLayout.addWidget(self.lb_shot_mode, 4, 0, 1, 1)
 
-        self.le_shotMode = QLineEdit(self.fm_buttons_sc)
-        self.le_shotMode.setObjectName(u"le_shotMode")
-        self.le_shotMode.setInputMask('B')
+        self.sb_shotMode = QSpinBox(self.fm_buttons_sc)
+        self.sb_shotMode.setObjectName(u"sb_shotMode")
+        self.sb_shotMode.setButtonSymbols(QAbstractSpinBox.NoButtons)
+        self.gridLayout.addWidget(self.sb_shotMode, 4, 1, 1, 1)
 
-        self.gridLayout.addWidget(self.le_shotMode, 4, 1, 1, 1)
+        self.sb_timeTrigger = QDoubleSpinBox(self.fm_buttons_sc)
+        self.sb_timeTrigger.setObjectName(u"sb_timeTrigger")
+        self.sb_timeTrigger.setSuffix(' ms')
+        self.sb_timeTrigger.setSingleStep(0.1)
+        self.sb_timeTrigger.setButtonSymbols(QAbstractSpinBox.NoButtons)
 
-        self.le_timeTrigger = QLineEdit(self.fm_buttons_sc)
-        self.le_timeTrigger.setObjectName(u"le_timeTrigger")
-        #self.le_timeTrigger.setInputMask('99')
+        self.gridLayout.addWidget(self.sb_timeTrigger, 3, 1, 1, 1)
 
-        self.gridLayout.addWidget(self.le_timeTrigger, 3, 1, 1, 1)
+        self.sb_timeFlash = QDoubleSpinBox(self.fm_buttons_sc)
+        self.sb_timeFlash.setObjectName(u"sb_timeFlash")
+        self.sb_timeFlash.setSuffix(' ms')
+        self.sb_timeFlash.setSingleStep(0.1)
+        self.sb_timeFlash.setButtonSymbols(QAbstractSpinBox.NoButtons)
 
-        self.le_timeFlash = QLineEdit(self.fm_buttons_sc)
-        self.le_timeFlash.setObjectName(u"le_timeFlash")
-        #self.le_timeFlash.setInputMask('99')
+        self.gridLayout.addWidget(self.sb_timeFlash, 5, 1, 1, 1)
 
-        self.gridLayout.addWidget(self.le_timeFlash, 5, 1, 1, 1)
+        self.sb_timeOut = QDoubleSpinBox(self.fm_buttons_sc)
+        self.sb_timeOut.setObjectName(u"sb_timeOut")
+        self.sb_timeOut.setSuffix(' ms')
+        self.sb_timeOut.setSingleStep(0.1)
+        self.sb_timeOut.setButtonSymbols(QAbstractSpinBox.NoButtons)
 
-        self.le_timeOut = QLineEdit(self.fm_buttons_sc)
-        self.le_timeOut.setObjectName(u"le_timeOut")
-        #self.le_timeOut.setInputMask('99')
-
-        self.gridLayout.addWidget(self.le_timeOut, 6, 1, 1, 1)
+        self.gridLayout.addWidget(self.sb_timeOut, 6, 1, 1, 1)
 
         self.lb_time_flash = QLabel(self.fm_buttons_sc)
         self.lb_time_flash.setObjectName(u"lb_time_flash")
@@ -184,6 +194,7 @@ class Page_Iluminator(QWidget):
         for i in range(15):
             self.cb_led[i] = QCheckBox(self.fm_leds)
             self.cb_led[i].setObjectName(str("cb_led_" + str(i + 1)))
+            self.cb_led[i].stateChanged.connect(self.Edit_leds)
             self.LayoutV_fm_leds.addWidget(self.cb_led[i])
 
             self.cb_led[i].hide()
@@ -209,7 +220,7 @@ class Page_Iluminator(QWidget):
         self.fm_PWM_led = [None] * 15
         self.fm_PWM_LayoutH_led = [None] * 15
         self.lb_PWM_led = [None] * 15
-        self.le_PWM_led = [None] * 15
+        self.sb_PWM_led = [None] * 15
 
         for i in range(15):
             self.fm_PWM_led[i] = QFrame(self.fm_PWM)
@@ -227,10 +238,12 @@ class Page_Iluminator(QWidget):
 
             self.fm_PWM_LayoutH_led[i].addWidget(self.lb_PWM_led[i])
 
-            self.le_PWM_led[i] = QLineEdit(self.fm_PWM_led[i])
-            self.le_PWM_led[i].setObjectName(str("le_PWM_led_" + str(i + 1)))
-            self.le_PWM_led[i].setInputMask('B99')
-            self.fm_PWM_LayoutH_led[i].addWidget(self.le_PWM_led[i])
+            self.sb_PWM_led[i] = QSpinBox(self.fm_PWM_led[i])
+            self.sb_PWM_led[i].setObjectName(str("le_PWM_led_" + str(i + 1)))
+            self.sb_PWM_led[i].setRange(1,100)
+            self.sb_PWM_led[i].setSuffix('%')
+            self.sb_PWM_led[i].setButtonSymbols(QAbstractSpinBox.NoButtons)
+            self.fm_PWM_LayoutH_led[i].addWidget(self.sb_PWM_led[i])
 
             self.LayoutV_fm_PWM.addWidget(self.fm_PWM_led[i])
 
@@ -320,11 +333,14 @@ class Page_Iluminator(QWidget):
     def Control_pb_configuration(self):
         Iluminator = self.App.Core_App.Iluminator_MultiSpectral
 
-        if self.le_timeSleepc.isModified():
-            time_sleep = float(self.le_timeSleepc.text())
+        if self.sb_timeSleepc.isModified():
+            time_sleep = float(self.sb_timeSleepc.text())
             Iluminator.set_time_sleepc(time_sleep)
-            self.le_timeSleepc.setText(str(time_sleep))
+            self.sb_timeSleepc.setText(str(time_sleep))
             print(time_sleep)
+            
+    def Edit_leds(self):
+        self.Veriq['leds'] = True
 
     def Control_pb_sc_leds(self):
 
@@ -353,12 +369,23 @@ class Page_Iluminator(QWidget):
                 self.le_PWM_led_setText_init()
 
                 self.lb_port.setText(puerto)
-                self.le_timeSleepc.setText(str(Iluminator.attributes['time_sleep']['value']))
-                self.le_shotMessage.setText(str(Iluminator.attributes['shot_message']['value']))
-                self.le_timeTrigger.setText(str(Iluminator.attributes['time_trigger']['value']))
-                self.le_timeOut.setText(str(Iluminator.attributes['time_out']['value']))
-                self.le_shotMode.setText(str(Iluminator.attributes['shot_mode']['value']))
-                self.le_timeFlash.setText(str(Iluminator.attributes['time_flash']['value']))
+                self.sb_timeSleepc.setValue(Iluminator.attributes['time_sleep']['value'])
+                self.sb_timeSleepc.setRange(Iluminator.attributes['time_sleep']['min'],
+                                            Iluminator.attributes['time_sleep']['max'])
+                self.le_shotMessage.setText(Iluminator.attributes['shot_message']['value'])
+                self.sb_timeTrigger.setValue(Iluminator.attributes['time_trigger']['value'])
+                self.sb_timeTrigger.setRange(Iluminator.attributes['time_trigger']['min'],
+                                             Iluminator.attributes['time_trigger']['max'])
+                self.sb_timeOut.setValue(Iluminator.attributes['time_out']['value'])
+                self.sb_timeOut.setRange(Iluminator.attributes['time_out']['min'],
+                                         Iluminator.attributes['time_out']['max'])
+                self.sb_shotMode.setValue(Iluminator.attributes['shot_mode']['value'])
+                self.sb_shotMode.setRange(Iluminator.attributes['shot_mode']['min'],
+                                          Iluminator.attributes['shot_mode']['max'])
+                self.sb_timeFlash.setValue(Iluminator.attributes['time_flash']['value'])
+                self.sb_timeFlash.setRange(Iluminator.attributes['time_flash']['min'],
+                                           Iluminator.attributes['time_flash']['max'])
+
                 Wavelengths = list(Iluminator.leds.keys())
                 self.Rename_cblb_leds(Wavelengths)
                 self.fm_init_corona.hide()
@@ -404,8 +431,8 @@ class Page_Iluminator(QWidget):
         Iluminator = self.App.Core_App.Iluminator_MultiSpectral
 
         for i, led in enumerate(Iluminator.get_leds()):
-            pwm_val = str(Iluminator.leds[led]['PWM_val'])
-            self.le_PWM_led[i].setText(pwm_val)
+            pwm_val = Iluminator.leds[led]['PWM_val']
+            self.sb_PWM_led[i].setValue(pwm_val)
 
     def Rename_cblb_leds(self, Wavelengths):
 
