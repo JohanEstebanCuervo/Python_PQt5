@@ -294,15 +294,14 @@ class Page_ColorReproduction(QWidget):
             Iluminator = self.App.Core_App.Iluminator_MultiSpectral
             self.index_PImag = index_prin
             imagen_prin = QPixmap(self.imagenesCarpeta[self.index_PImag])
-            index = Iluminator.leds[Iluminator.get_leds()[self.index_PImag]]
-            self.lb_wavelenth_capture.setText(Iluminator.Wavelengths[index] + ' nm')
+            led = Iluminator.get_leds()[self.index_PImag]
+            self.lb_wavelenth_capture.setText(str(led) + ' nm')
             self.gv_Principal_imag.setPhoto(imagen_prin)
 
             self.Charge_lb_list_imag()
             self.Color_repro.wavelengths = []
-            for led_name in Iluminator.get_leds():
-                index = Iluminator.leds[led_name]
-                self.Color_repro.wavelengths.append(int(Iluminator.Wavelengths[index]))
+            for led in Iluminator.get_leds():
+                self.Color_repro.wavelengths.append(led)
 
     def Charge_lb_list_imag(self):
 

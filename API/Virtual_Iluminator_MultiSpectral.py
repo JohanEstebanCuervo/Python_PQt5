@@ -8,7 +8,7 @@ def attributes_iluminator():
                   'shot_mode': {'value': 0, 'message': "T006014001U", 'min': 0, 'max': 1},
                   'time_sleep': {'value': None, 'min': 0.00001, 'max': 0.5},
                   'time_shot': {'value': None, 'min': 0.00001, 'max': 2},
-                  'shot_message': {'value': None}}
+                  'shot_message': {'value': 'W'}}
 
     leds = {410: {'active': True, 'PWM_val': 90, 'PWM_message': "J1090K",
                   'PWM_min': 1, 'PWM_max': 100, 'led_message': 'M01N'},
@@ -51,9 +51,10 @@ class Virtual_Iluminator_MultiSpectral(Iluminator_MultiSpectral):
     def __init__(self, puerto, bps=57600, time_sleep_c=0.1, timeshot=1e-2):
         super(Virtual_Iluminator_MultiSpectral, self).__init__(puerto, bps, time_sleep_c, timeshot, True)
 
-        self.set_shot_message('W')
         self.attributes, self.leds = attributes_iluminator()
-
+        self.set_shot_message(self.attributes['shot_message']['value'])
+        self.attributes['time_sleep']['value'] = time_sleep_c
+        self.attributes['time_shot']['value'] = timeshot
         if self.config_PWM():
             pass
         elif self.config_list_leds():
@@ -203,13 +204,20 @@ class Virtual_Iluminator_MultiSpectral(Iluminator_MultiSpectral):
 
         leds = list(self.leds.keys())
         leds_list = []
-
+        leds_act = []
         for led in leds:
             if self.leds[led]['active']:
                 led_message = self.leds[led]['led_message']
                 leds_list.append(led_message)
+                leds_act.append(led)
 
+        self.leds_act = leds_act
         if self.set_leds(leds_list):
             return 1
 
         return 0
+
+    def get_leds(self):
+
+        return self.leds_act
+

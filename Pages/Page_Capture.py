@@ -201,8 +201,7 @@ class Page_Capture(QWidget):
             Iluminator.shot_multispectral()
 
             for led in Iluminator.get_leds():
-                index = Iluminator.leds[led]
-                Camera.Acquire_Image(Iluminator.Wavelengths[index])
+                Camera.Acquire_Image(str(led))
 
             Camera.End_Acquisition()
 
@@ -218,8 +217,8 @@ class Page_Capture(QWidget):
         if len(self.imagenesCarpeta) != 0:
             self.index_PImag = index_prin
             imagen_prin = QPixmap(self.imagenesCarpeta[self.index_PImag])
-            index = Iluminator.leds[Iluminator.get_leds()[self.index_PImag]]
-            self.lb_wavelenth_capture.setText(Iluminator.Wavelengths[index] + ' nm')
+            led = Iluminator.get_leds()[self.index_PImag]
+            self.lb_wavelenth_capture.setText(str(led) + ' nm')
             self.gv_Principal_imag.setPhoto(imagen_prin)
 
             self.Charge_lb_list_imag()

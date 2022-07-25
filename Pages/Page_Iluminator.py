@@ -353,15 +353,14 @@ class Page_Iluminator(QWidget):
                 self.le_PWM_led_setText_init()
 
                 self.lb_port.setText(puerto)
-                self.le_timeSleepc.setText(str(Iluminator.get_time_sleepc()))
-                self.le_shotMessage.setText(str(Iluminator.get_shot_message()))
-                self.le_timeTrigger.setText(str(Iluminator.get_shot_time_trigger()))
-                self.le_timeOut.setText(str(Iluminator.get_shot_time_out()))
-                self.le_shotMode.setText(str(Iluminator.get_shot_mode()))
-                self.le_timeFlash.setText(str(Iluminator.get_shot_time_flash()))
-
-                self.Rename_cblb_leds(Iluminator.Wavelengths)
-
+                self.le_timeSleepc.setText(str(Iluminator.attributes['time_sleep']['value']))
+                self.le_shotMessage.setText(str(Iluminator.attributes['shot_message']['value']))
+                self.le_timeTrigger.setText(str(Iluminator.attributes['time_trigger']['value']))
+                self.le_timeOut.setText(str(Iluminator.attributes['time_out']['value']))
+                self.le_shotMode.setText(str(Iluminator.attributes['shot_mode']['value']))
+                self.le_timeFlash.setText(str(Iluminator.attributes['time_flash']['value']))
+                Wavelengths = list(Iluminator.leds.keys())
+                self.Rename_cblb_leds(Wavelengths)
                 self.fm_init_corona.hide()
                 self.fm_settings_iluminator.show()
                 self.lb_init_c_error.setText("")
@@ -381,10 +380,10 @@ class Page_Iluminator(QWidget):
 
     def cb_leds_checked_init(self):
         Iluminator = self.App.Core_App.Iluminator_MultiSpectral
-
+        leds = list(Iluminator.leds.keys())
         for led in Iluminator.get_leds():
 
-            index = Iluminator.leds[led]
+            index = leds.index(led)
             self.cb_led[index].setChecked(True)
 
     def cb_leds_is_checked(self):
@@ -404,14 +403,14 @@ class Page_Iluminator(QWidget):
 
         Iluminator = self.App.Core_App.Iluminator_MultiSpectral
 
-        for i, pwm_led in enumerate(Iluminator.get_PWM_leds()):
-
-            self.le_PWM_led[i].setText(pwm_led[2:5])
+        for i, led in enumerate(Iluminator.get_leds()):
+            pwm_val = str(Iluminator.leds[led]['PWM_val'])
+            self.le_PWM_led[i].setText(pwm_val)
 
     def Rename_cblb_leds(self, Wavelengths):
 
         for i, wav in enumerate(Wavelengths):
-            self.cb_led[i].setText(wav + ' nm')
-            self.lb_PWM_led[i].setText(wav + ' nm PWM')
+            self.cb_led[i].setText(str(wav) + ' nm')
+            self.lb_PWM_led[i].setText(str(wav) + ' nm PWM')
             self.cb_led[i].show()
             self.fm_PWM_led[i].show()

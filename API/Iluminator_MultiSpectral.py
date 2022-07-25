@@ -78,6 +78,9 @@ class Iluminator_MultiSpectral:
     def set_leds(self, leds):
         self.__leds = leds
 
+    def get_leds(self, leds):
+        return self.__leds
+
     def set_shot_message(self, message):
 
         self.__shot_message = message.encode('utf-8')
