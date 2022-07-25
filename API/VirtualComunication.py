@@ -32,12 +32,8 @@ class VirtualComunication:
         if mensaje[0] == 'J':
 
             if len(mensaje) == 6 and self.verify_led(mensaje[1]) and mensaje[-1] == 'K':
-
+                
                 self.in_waiting = 1
-
-
-
-
 
     def read(self):
 
@@ -49,17 +45,15 @@ class VirtualComunication:
 
         pass
 
-    def verify_led(self,val):
+    def verify_led(self, val):
 
         if (val == '1' or val == '2' or val == '3' or val == '4'
             or val == '5' or val == '6' or val == '7' or val == '8'
             or val == '9' or val == 'A' or val == 'B' or val == 'C'
             or val == 'D' or val == 'E' or val == 'F'):
 
-
             return True
 
         else:
 
             return False
-

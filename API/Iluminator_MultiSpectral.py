@@ -9,15 +9,8 @@ class Iluminator_MultiSpectral:
     def __init__(self, puerto, bps=57600, time_sleep_c=0.1, timeshot=1e-2, Virtual_Mode=False):
         print("Iniciando Corona_Multiespectral")
         self.__timesleepc = time_sleep_c
-        self.__shot_message = None
-        self.__timeshot = None
+        self.__timeshot = timeshot
         self.__correct_tx = b'O'
-        self.__PWM_leds = None
-        self.__leds = None
-        self.__shot_time_trigger = None
-        self.__shot_time_timeout = None
-        self.__shot_mode = None
-        self.__shot_time_flash = None
 
         try:
             self.__comunication = serial.Serial(puerto, bps)
@@ -33,99 +26,38 @@ class Iluminator_MultiSpectral:
                 self.__comunication_state = False
                 print("No se ejecuto el puerto serial")
 
-        message = "T006014001U"
-        self.set_shot_time_trigger_flash_timeout(message)
-
         print('Comunicacion Correcta')
 
-    #################################
-    # SET functions
-    #################################
-    def set_shot_time_trigger_flash_timeout(self, message):
+    ##############################
+    # Methods
+    ##############################
+
+    def config(self, message):
 
         if self.tx_msg(message):
-
-            print("Error al configurar los tiempos de la corona")
+            print('Configuracion: ' + str(message) + ' NO realizada')
             return 1
 
         else:
-
-            self.__shot_mode = message[1]
-            self.__shot_time_trigger = message[2:4]
-            self.__shot_time_flash = message[4:7]
-            self.__shot_time_timeout = message[7:10]
-
+            print('Configuracion: ' + str(message) + ' realizada')
             return 0
 
-    def set_shot_mode(self, message):
+    def get_comunication_state(self):
 
-        if self.tx_msg(message):
-
-            print("Error al configurar shot mode")
-            return 1
-
-        else:
-
-            self.__shot_mode = message
-
-            return 0
-
-    def set_shot_time_trigger(self, message):
-
-        if self.tx_msg(message):
-
-            print("Error al configurar time trigger")
-            return 1
-
-        else:
-
-            self.__shot_time_trigger = message
-            return 0
-
-
-    def set_shot_time_flash(self, message):
-
-        if self.tx_msg(message):
-
-            print("Error al configurar tiempo de flash")
-            return 1
-
-        else:
-
-            self.__shot_time_flash = message
-            return 0
-
-
-    def set_shot_time_timeout(self, message):
-
-        if self.tx_msg(message):
-
-            print("Error al configurar el tiempo muerto")
-            return 1
-
-        else:
-
-            self.__shot_time_timeout = message
-
+        return self.__comunication_state
 
     def set_shot_led(self, index):
 
         if self.tx_msg(self.__leds[index]):
 
-            print("Error al configurar el led " + str(index + 1) + " en el iluminador")
+            print("Error al configurar el led " + str(index + 1) + " en la corona")
             return 1
 
-    def set_PWM_Leds(self, pwm_leds):
+        else:
 
-        self.__PWM_leds = pwm_leds
+            return 0
 
-        return 0
-
-    def set_shot_message(self, message):
-
-        self.__shot_message = message
-
-    def set_time_sleepc(self, time):  # Float Number, Seconds
+    def set_time_sleepc(self, time):
 
         self.__timesleepc = time
 
@@ -133,61 +65,26 @@ class Iluminator_MultiSpectral:
 
         self.__timeshot = timeshot
 
+    def set_PWM_Leds(self, pwm_leds):
+
+        for pwm_led in pwm_leds:
+
+            if self.tx_msg(pwm_led):
+                print("Error al configurar el PWM de la corona: " + str(pwm_led))
+                return 1
+
+        return 0
+
     def set_leds(self, leds):
         self.__leds = leds
 
-    def set_correct_tx(self, correct_tx):  # Correct mensaje en string
-        self.__correct_tx = correct_tx.encode('utf-8')
+    def set_shot_message(self, message):
 
-    #########################
+        self.__shot_message = message.encode('utf-8')
 
-    # GET Functions
+    def set_correct_tx(self, val):
 
-    #########################
-
-    def get_comunication_state(self):
-
-        return self.__comunication_state
-
-    def get_leds(self):
-
-        return self.__leds
-
-    def get_PWM_leds(self):
-
-        return self.__PWM_leds
-
-    def get_time_sleepc(self):
-
-        return self.__timesleepc
-
-    def get_shot_message(self):
-
-        return self.__shot_message
-
-    def get_shot_mode(self):
-
-        return self.__shot_mode
-
-    def get_shot_time_trigger(self):
-
-        return self.__shot_time_trigger
-
-    def get_shot_time_flash(self):
-
-        return self.__shot_time_flash
-
-    def get_shot_time_out(self):
-
-        return self.__shot_time_timeout
-
-    def get_timeshot(self):
-
-        return self.__timeshot
-
-    ##############################
-    # Methods
-    ##############################
+        self.__correct_tx = val.encode('utf-8')
 
     def tx_msg(self, message, comp=True):
         if self.__comunication_state:
@@ -231,7 +128,7 @@ class Iluminator_MultiSpectral:
     def shot(self):
 
         if self.__comunication_state:
-            self.__comunication.write(self.__shot_message.encode('utf-8'))
+            self.__comunication.write(self.__shot_message)
             time.sleep(self.__timesleepc)
 
             if self.__comunication.in_waiting > 0:
