@@ -97,6 +97,7 @@ class AMILI_App(QtWidgets.QMainWindow):
         self.statusBar.setObjectName(u"statusBar")
         self.setStatusBar(self.statusBar)
 
+
     def desplegar_menu(self, event):
 
         if self.lb_desplegar_menu.text() == '<':

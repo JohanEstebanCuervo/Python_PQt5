@@ -32,7 +32,7 @@ class VirtualComunication:
         if mensaje[0] == 'J':
 
             if len(mensaje) == 6 and self.verify_led(mensaje[1]) and mensaje[-1] == 'K':
-                
+
                 self.in_waiting = 1
 
     def read(self):

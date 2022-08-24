@@ -16,6 +16,8 @@ class Page_Capture(QWidget):
 
         self.Control_Buttons()
 
+        qApp.installEventFilter(self)
+
     def Structure_Page(self):
 
         self.setObjectName(u"Page_Capture")
@@ -168,6 +170,16 @@ class Page_Capture(QWidget):
         self.LayoutV_Prin.addWidget(self.fm_list_imag)
 
         self.LayoutV_Prin.setStretch(2, 20)
+
+    def eventFilter(self, obj, event):
+        if (event.type() == QEvent.KeyRelease):
+            key = event.key()
+            if key == Qt.Key_Left:
+                self.Control_pb_after_capture()
+            if key == Qt.Key_Right:
+                self.Control_pb_next_capture()
+
+        return False
 
     def Names_Page(self):
 
